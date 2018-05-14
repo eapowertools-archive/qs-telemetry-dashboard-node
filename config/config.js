@@ -1,11 +1,12 @@
 var config = {
     global: {
         delimiter: '`',
-        hostname: 'desktop-gs8laa5.local',
+        // hostname: 'desktop-gs8laa5.local',
+        hostname: 'localhost',
         userDirectory: 'INTERNAL',
         userId: 'sa_api',
-        certificatesPath: '/Users/eps/Documents/Certificates'
-        //certificatesPath: 'C:/ProgramData/Qlik/Sense/Repository/Exported Certificates/.Local Certificates/'
+        // certificatesPath: '/Users/eps/Documents/Certificates'
+        certificatesPath: 'C:/ProgramData/Qlik/Sense/Repository/Exported Certificates/.Local Certificates/'
     },
     engine: {
         port: 4747,
