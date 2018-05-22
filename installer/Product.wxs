@@ -10,7 +10,7 @@
 
     <Feature Id="Complete" Title="Telemetry Dashboard" Description="Telemetry Dashboard and Metafetching scripts." ConfigurableDirectory="INSTALLFOLDER" Level="1">
       <ComponentGroupRef Id="MainJSFiles" />
-      <ComponentGroupRef Id="LibraryFiles" />
+      <ComponentGroupRef Id="LibComponentGroup"/>
       <ComponentGroupRef Id="NodeModulesComponentGroup"/>
     </Feature>
   </Product>
@@ -23,8 +23,6 @@
           <Directory Id="Sense" Name="Sense">
             <Directory Id="EAPowerTools" Name="EAPowerTools">
               <Directory Id="INSTALLFOLDER" Name="TelemetryDashboard" >
-                <Directory Id="LIBFOLDER" Name="lib">
-                </Directory>
               </Directory>
             </Directory>
           </Directory>
@@ -43,12 +41,6 @@
       <Component Id="fetchMetadata.js_comp" Guid="b0dc5050-5885-493b-ba46-8f173591e1d6" Win64="yes">
         <File Source="$(var.ProjectDir)..\fetchMetadata.js" Id="fetchMetadataJS" KeyPath="yes" />
       </Component>
-    </ComponentGroup>
-
-    <ComponentGroup Id="LibraryFiles" Directory="LIBFOLDER">
-      <Component Id="getApps.js_comp" Guid="0362d400-7c07-4594-8e92-70ab1f8699ac" Win64="yes">
-        <File Source="$(var.ProjectDir)..\lib\getApps.js" Id="getAppsJS" KeyPath="yes" />
-      </Component>  
     </ComponentGroup>
     
   </Fragment>

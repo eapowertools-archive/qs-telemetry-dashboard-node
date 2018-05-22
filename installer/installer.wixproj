@@ -12,28 +12,44 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug;SourcePath=..\node_modules\</DefineConstants>
+    <DefineConstants>Debug;NodeModulesPath=..\node_modules\;LibPath=..\lib\</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="bin\Debug\directory.wxs">
-      <Link>directory.wxs</Link>
+    <Compile Include="bin\Debug\LibDirectory.wxs">
+      <Link>Generated-DirectoryFiles\LibDirectory.wxs</Link>
+    </Compile>
+    <Compile Include="bin\Debug\NodeModuleDirectory.wxs">
+      <Link>Generated-DirectoryFiles\NodeModuleDirectory.wxs</Link>
     </Compile>
     <Compile Include="Product.wxs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="License.rtf" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Generated-DirectoryFiles" />
+  </ItemGroup>
   <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
   <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
     <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
   </Target>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DefineConstants>Debug;NodeModulesPath=..\node_modules\;LibPath=..\lib\</DefineConstants>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>"%25WIX%25\bin\heat.exe" dir "$(ProjectDir)\..\node_modules" -gg -sfrag -template:fragment -cg NodeModulesComponentGroup -var var.SourcePath -out directory.wxs</PreBuildEvent>
+    <PreBuildEvent>"%25WIX%25\bin\heat.exe" dir "$(ProjectDir)\..\node_modules" -dr INSTALLFOLDER -gg -sfrag -template:fragment -cg NodeModulesComponentGroup -var var.NodeModulesPath -out NodeModuleDirectory.wxs
+"%25WIX%25\bin\heat.exe" dir "$(ProjectDir)\..\lib" -dr INSTALLFOLDER -gg -sfrag -template fragment -cg LibComponentGroup -var var.LibPath -out LibDirectory.wxs</PreBuildEvent>
   </PropertyGroup>
   <!--
   To modify your build process, add your task inside one of the targets below and uncomment it.
