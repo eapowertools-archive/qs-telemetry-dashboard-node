@@ -70,7 +70,7 @@
 "%25WIX%25\bin\heat.exe" dir "$(ProjectDir)\..\lib" -dr INSTALLFOLDER -gg -sfrag -template fragment -cg LibComponentGroup -var var.LibPath -out LibDirectory.wxs</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>("$(WixExtDir)\insignia.exe" -im "$(TargetPath)") ^&amp; IF %25ERRORLEVEL%25 LEQ 1 exit 0</PostBuildEvent>
+    <PostBuildEvent />
   </PropertyGroup>
   <!--
   To modify your build process, add your task inside one of the targets below and uncomment it.
