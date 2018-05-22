@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="installer" Language="1033" Version="1.0.0.0" Manufacturer="EA Americas"
+           UpgradeCode="6827879d-8349-4430-b2cb-02e094803c2e">
+    <Package Platform="x64" InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="Complete" Title="Telemetry Dashboard" Description="Telemetry Dashboard and Metafetching scripts." ConfigurableDirectory="INSTALLFOLDER" Level="1">
+      <ComponentGroupRef Id="MainJSFiles" />
+      <ComponentGroupRef Id="LibraryFiles" />
+    </Feature>
+  </Product>
+
+  <Fragment>
+    <!--    C:\Program Files\Qlik\Sense\EAPowerTools-->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="Qlik" Name="Qlik">
+          <Directory Id="Sense" Name="Sense">
+            <Directory Id="EAPowerTools" Name="EAPowerTools">
+              <Directory Id="INSTALLFOLDER" Name="TelemetryDashboard" >
+                <Directory Id="LIBFOLDER" Name="lib">
+                </Directory>
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="MainJSFiles" Directory="INSTALLFOLDER">
+      <Component Id="INSTALLDIR_comp" Guid="3b90a8f3-ebb2-4fa7-b9cb-b5ce9da24a63" Win64="yes">
+        <CreateFolder />
+        <RemoveFile Id="RemoveFilesFromAppDirectory" Name="*.*" On="uninstall" />
+      </Component>
+
+      <Component Id="fetchMetadata.js_comp" Guid="b0dc5050-5885-493b-ba46-8f173591e1d6" Win64="yes">
+        <File Source="$(var.ProjectDir)..\fetchMetadata.js" Id="fetchMetadataJS" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="LibraryFiles" Directory="LIBFOLDER">
+      <Component Id="getApps.js_comp" Guid="0362d400-7c07-4594-8e92-70ab1f8699ac" Win64="yes">
+        <File Source="$(var.ProjectDir)..\lib\getApps.js" Id="getAppsJS" KeyPath="yes" />
+      </Component>  
+    </ComponentGroup>
+    
+  </Fragment>
+
+
+  
+  
+</Wix>
