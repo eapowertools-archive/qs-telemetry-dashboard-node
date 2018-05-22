@@ -7,7 +7,7 @@
     <ProductVersion>3.10</ProductVersion>
     <ProjectGuid>602c8a92-6222-4b60-a603-8ecda8bb587c</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>installer</OutputName>
+    <OutputName>TelemetryDashboard</OutputName>
     <OutputType>Package</OutputType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -68,6 +68,9 @@
   <PropertyGroup>
     <PreBuildEvent>"%25WIX%25\bin\heat.exe" dir "$(ProjectDir)\..\node_modules" -dr INSTALLFOLDER -gg -sfrag -template fragment -cg NodeModulesComponentGroup -var var.NodeModulesPath -out NodeModuleDirectory.wxs
 "%25WIX%25\bin\heat.exe" dir "$(ProjectDir)\..\lib" -dr INSTALLFOLDER -gg -sfrag -template fragment -cg LibComponentGroup -var var.LibPath -out LibDirectory.wxs</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>("$(WixExtDir)\insignia.exe" -im "$(TargetPath)") ^&amp; IF %25ERRORLEVEL%25 LEQ 1 exit 0</PostBuildEvent>
   </PropertyGroup>
   <!--
   To modify your build process, add your task inside one of the targets below and uncomment it.
