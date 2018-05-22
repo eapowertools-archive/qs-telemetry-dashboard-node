@@ -11,6 +11,7 @@
     <Feature Id="Complete" Title="Telemetry Dashboard" Description="Telemetry Dashboard and Metafetching scripts." ConfigurableDirectory="INSTALLFOLDER" Level="1">
       <ComponentGroupRef Id="MainJSFiles" />
       <ComponentGroupRef Id="LibraryFiles" />
+      <ComponentGroupRef Id="NodeModulesComponentGroup"/>
     </Feature>
   </Product>
 
