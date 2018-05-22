@@ -2,8 +2,8 @@
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Id="*" Name="installer" Language="1033" Version="1.0.0.0" Manufacturer="EA Americas"
-           UpgradeCode="6827879d-8349-4430-b2cb-02e094803c2e">
-    <Package Platform="x64" InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+           UpgradeCode="6827879d-8349-4430-b2cb-02e094803c2e" Codepage="1252">
+    <Package Platform="x64" InstallerVersion="200" Compressed="yes" InstallScope="perMachine" SummaryCodepage="1252" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
@@ -13,10 +13,15 @@
       <ComponentGroupRef Id="LibComponentGroup"/>
       <ComponentGroupRef Id="NodeModulesComponentGroup"/>
     </Feature>
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+    <WixVariable Id="WixUIDialogBmp" Value="dialog.bmp" />
+
+    <UIRef Id="WixUI_Minimal" />
   </Product>
 
   <Fragment>
-    <!--    C:\Program Files\Qlik\Sense\EAPowerTools-->
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFiles64Folder">
         <Directory Id="Qlik" Name="Qlik">
@@ -42,10 +47,6 @@
         <File Source="$(var.ProjectDir)..\fetchMetadata.js" Id="fetchMetadataJS" KeyPath="yes" />
       </Component>
     </ComponentGroup>
-    
   </Fragment>
 
-
-  
-  
 </Wix>
