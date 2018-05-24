@@ -16,7 +16,7 @@ var config = {
         port: 4242
     },
     filenames: {
-        outputDir: "./output/",
+        outputDir: "C:/ProgramData/Qlik/Sense/TelemetryMetadata/",
         variables_table: "variables.csv",
         masterMetrics_table: "masterMetrics.csv",
         apps_table: "apps.csv",

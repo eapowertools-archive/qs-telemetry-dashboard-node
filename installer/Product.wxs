@@ -8,17 +8,28 @@
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
 
+    <Property Id="QRSKEY">
+      <RegistrySearch Id="QlikSenseRepsitoryServiceRegistry"
+                      Root="HKLM"
+                      Key="System\CurrentControlSet\Services\QlikSenseRepositoryService"
+                      Name="DisplayName"
+                      Type="raw" />
+    </Property>
+    <Condition Message="The Telemetry Dashboard needs to be installed on a machine running Qlik Sense Enterprise.">
+      <![CDATA[Installed OR QRSKEY]]>
+    </Condition>
+
     <Feature Id="Complete" Title="Telemetry Dashboard" Description="Telemetry Dashboard and Metafetching scripts." ConfigurableDirectory="INSTALLFOLDER" Level="1">
+      <ComponentRef Id="config.js_comp"/>
       <ComponentGroupRef Id="MainJSFiles" />
       <ComponentGroupRef Id="LibComponentGroup"/>
       <ComponentGroupRef Id="NodeModulesComponentGroup"/>
     </Feature>
 
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <UIRef Id="WixUI_InstallDir" />
     <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
     <WixVariable Id="WixUIDialogBmp" Value="dialog.bmp" />
-
-    <UIRef Id="WixUI_Minimal" />
   </Product>
 
   <Fragment>
@@ -28,6 +39,7 @@
           <Directory Id="Sense" Name="Sense">
             <Directory Id="EAPowerTools" Name="EAPowerTools">
               <Directory Id="INSTALLFOLDER" Name="TelemetryDashboard" >
+                <Directory Id="CONFIGFOLDER" Name="config" />
               </Directory>
             </Directory>
           </Directory>
@@ -47,6 +59,9 @@
         <File Source="$(var.ProjectDir)..\fetchMetadata.js" Id="fetchMetadataJS" KeyPath="yes" />
       </Component>
     </ComponentGroup>
+    <Component Id="config.js_comp" Guid="19fb555e-896f-427d-913a-7a2fc248f0d3" Win64="yes" Directory="CONFIGFOLDER">
+      <File Source="$(var.ProjectDir)..\config\config.js" Id="configJS" KeyPath="yes" />
+    </Component>
   </Fragment>
 
 </Wix>
