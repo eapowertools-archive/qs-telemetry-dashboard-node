@@ -69,13 +69,14 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="downloadExtensions.bat" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Resources\cl-container-v1.0.5.zip" />
-    <None Include="Resources\cl-kpi_v1.4.5.zip" />
+    <None Include="Resources\cl-container.zip" />
+    <None Include="Resources\cl-kpi.zip" />
     <None Include="Resources\qsSimpleKPI.zip" />
-    <None Include="Resources\sense-navigation_latest.zip" />
+    <None Include="Resources\sense-navigation.zip" />
     <None Include="Resources\Telemetry Dashboard.qvf" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

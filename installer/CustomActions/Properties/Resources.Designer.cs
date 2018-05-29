@@ -19,7 +19,7 @@ namespace CustomActions.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -63,9 +63,9 @@ namespace CustomActions.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] cl_container_v1_0_5 {
+        internal static byte[] cl_container {
             get {
-                object obj = ResourceManager.GetObject("cl_container_v1_0_5", resourceCulture);
+                object obj = ResourceManager.GetObject("cl_container", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace CustomActions.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] cl_kpi_v1_4_5 {
+        internal static byte[] cl_kpi {
             get {
-                object obj = ResourceManager.GetObject("cl_kpi_v1_4_5", resourceCulture);
+                object obj = ResourceManager.GetObject("cl_kpi", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -93,9 +93,9 @@ namespace CustomActions.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] sense_navigation_latest {
+        internal static byte[] sense_navigation {
             get {
-                object obj = ResourceManager.GetObject("sense_navigation_latest", resourceCulture);
+                object obj = ResourceManager.GetObject("sense_navigation", resourceCulture);
                 return ((byte[])(obj));
             }
         }

@@ -173,7 +173,7 @@ namespace CustomActions
 
 			if (JObject.Parse((string)JsonConvert.DeserializeObject(hasExtension1.Item2))["value"].ToObject<int>() == 0)
 			{
-				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/extension/upload", HTTPMethod.POST, HTTPContentType.json, Properties.Resources.cl_container_v1_0_5);
+				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/extension/upload", HTTPMethod.POST, HTTPContentType.json, Properties.Resources.cl_container);
 				if (importExtensionResponse.Item1 != HttpStatusCode.Created)
 				{
 					return ActionResult.Failure;
@@ -189,7 +189,7 @@ namespace CustomActions
 
 			if (JObject.Parse((string)JsonConvert.DeserializeObject(hasExtension1.Item2))["value"].ToObject<int>() == 0)
 			{
-				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/extension/upload", HTTPMethod.POST, HTTPContentType.json, Properties.Resources.cl_kpi_v1_4_5);
+				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/extension/upload", HTTPMethod.POST, HTTPContentType.json, Properties.Resources.cl_kpi);
 				if (importExtensionResponse.Item1 != HttpStatusCode.Created)
 				{
 					return ActionResult.Failure;
@@ -221,7 +221,7 @@ namespace CustomActions
 
 			if (JObject.Parse((string)JsonConvert.DeserializeObject(hasExtension1.Item2))["value"].ToObject<int>() == 0)
 			{
-				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/extension/upload", HTTPMethod.POST, HTTPContentType.json, Properties.Resources.sense_navigation_latest);
+				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/extension/upload", HTTPMethod.POST, HTTPContentType.json, Properties.Resources.sense_navigation);
 				if (importExtensionResponse.Item1 != HttpStatusCode.Created)
 				{
 					return ActionResult.Failure;
