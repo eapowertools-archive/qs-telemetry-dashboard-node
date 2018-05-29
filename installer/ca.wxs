@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+    <CustomAction Id='IsRepositoryRunningAction' BinaryKey='CABin' DllEntry='IsRepositoryRunning' Execute='immediate'
+                  Return='check'/>
+    <CustomAction Id='ImportAppAction' BinaryKey='CABin' DllEntry='ImportApp' Execute='immediate'
+                  Return='check'/>
+
+    <Binary Id='CABin' SourceFile='./CustomActions/bin/x64/Debug/CustomActions.dll'/>
+	</Fragment>
+</Wix>

@@ -30,6 +30,11 @@
     <UIRef Id="WixUI_InstallDir" />
     <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
     <WixVariable Id="WixUIDialogBmp" Value="dialog.bmp" />
+
+    <InstallExecuteSequence>
+      <Custom Action='IsRepositoryRunningAction' Before='InstallFiles' />
+      <Custom Action='ImportAppAction' After='InstallFiles' />
+    </InstallExecuteSequence>
   </Product>
 
   <Fragment>

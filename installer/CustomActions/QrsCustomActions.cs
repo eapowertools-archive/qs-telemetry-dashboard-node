@@ -135,6 +135,7 @@ namespace CustomActions
 			}
 			else
 			{
+				session.Message(InstallMessage.Error, new Record() { FormatString = "Cannot install the Telemetry Dashboard as the installer could not contact the 'Qlik Repository Service'." });
 				return ActionResult.Failure;
 			}
 		}
