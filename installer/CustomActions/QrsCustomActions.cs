@@ -165,7 +165,7 @@ namespace CustomActions
 		public static ActionResult ImportExtensions(Session session)
 		{
 			// Extension 1
-			Tuple<HttpStatusCode, string> hasExtension1 = MakeQrsRequest("/extension/count?filter=name eq 'Telemetry Dashboard'", HTTPMethod.GET);
+			Tuple<HttpStatusCode, string> hasExtension1 = MakeQrsRequest("/extension/count?filter=name eq 'cl-container'", HTTPMethod.GET);
 			if (hasExtension1.Item1 != HttpStatusCode.OK)
 			{
 				return ActionResult.Failure;
@@ -173,7 +173,7 @@ namespace CustomActions
 
 			if (JObject.Parse((string)JsonConvert.DeserializeObject(hasExtension1.Item2))["value"].ToObject<int>() == 0)
 			{
-				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/extension/upload", HTTPMethod.POST, HTTPContentType.json, Properties.Resources.Telemetry_Dashboard);
+				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/extension/upload", HTTPMethod.POST, HTTPContentType.json, Properties.Resources.cl_container_v1_0_5);
 				if (importExtensionResponse.Item1 != HttpStatusCode.Created)
 				{
 					return ActionResult.Failure;
@@ -181,7 +181,7 @@ namespace CustomActions
 			}
 
 			// Extension 2
-			Tuple<HttpStatusCode, string> hasExtension2 = MakeQrsRequest("/extension/count?filter=name eq 'Telemetry Dashboard'", HTTPMethod.GET);
+			Tuple<HttpStatusCode, string> hasExtension2 = MakeQrsRequest("/extension/count?filter=name eq 'cl-kpi'", HTTPMethod.GET);
 			if (hasExtension1.Item1 != HttpStatusCode.OK)
 			{
 				return ActionResult.Failure;
@@ -189,7 +189,7 @@ namespace CustomActions
 
 			if (JObject.Parse((string)JsonConvert.DeserializeObject(hasExtension1.Item2))["value"].ToObject<int>() == 0)
 			{
-				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/extension/upload", HTTPMethod.POST, HTTPContentType.json, Properties.Resources.Telemetry_Dashboard);
+				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/extension/upload", HTTPMethod.POST, HTTPContentType.json, Properties.Resources.cl_kpi_v1_4_5);
 				if (importExtensionResponse.Item1 != HttpStatusCode.Created)
 				{
 					return ActionResult.Failure;
@@ -197,7 +197,7 @@ namespace CustomActions
 			}
 
 			// Extension 3
-			Tuple<HttpStatusCode, string> hasExtension3 = MakeQrsRequest("/extension/count?filter=name eq 'Telemetry Dashboard'", HTTPMethod.GET);
+			Tuple<HttpStatusCode, string> hasExtension3 = MakeQrsRequest("/extension/count?filter=name eq 'qsSimpleKPI'", HTTPMethod.GET);
 			if (hasExtension1.Item1 != HttpStatusCode.OK)
 			{
 				return ActionResult.Failure;
@@ -205,7 +205,7 @@ namespace CustomActions
 
 			if (JObject.Parse((string)JsonConvert.DeserializeObject(hasExtension1.Item2))["value"].ToObject<int>() == 0)
 			{
-				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/extension/upload", HTTPMethod.POST, HTTPContentType.json, Properties.Resources.Telemetry_Dashboard);
+				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/extension/upload", HTTPMethod.POST, HTTPContentType.json, Properties.Resources.qsSimpleKPI);
 				if (importExtensionResponse.Item1 != HttpStatusCode.Created)
 				{
 					return ActionResult.Failure;
@@ -213,7 +213,7 @@ namespace CustomActions
 			}
 
 			// Extension 4
-			Tuple<HttpStatusCode, string> hasExtension4 = MakeQrsRequest("/extension/count?filter=name eq 'Telemetry Dashboard'", HTTPMethod.GET);
+			Tuple<HttpStatusCode, string> hasExtension4 = MakeQrsRequest("/extension/count?filter=name eq 'swr-sense-navigation'", HTTPMethod.GET);
 			if (hasExtension1.Item1 != HttpStatusCode.OK)
 			{
 				return ActionResult.Failure;
@@ -221,7 +221,7 @@ namespace CustomActions
 
 			if (JObject.Parse((string)JsonConvert.DeserializeObject(hasExtension1.Item2))["value"].ToObject<int>() == 0)
 			{
-				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/extension/upload", HTTPMethod.POST, HTTPContentType.json, Properties.Resources.Telemetry_Dashboard);
+				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/extension/upload", HTTPMethod.POST, HTTPContentType.json, Properties.Resources.sense_navigation_latest);
 				if (importExtensionResponse.Item1 != HttpStatusCode.Created)
 				{
 					return ActionResult.Failure;

@@ -33,7 +33,7 @@
     <Reference Include="Microsoft.Deployment.WindowsInstaller, Version=3.0.0.0, Culture=neutral, PublicKeyToken=ce35f76fcda82bad, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\WiX.3.11.1\tools\Microsoft.Deployment.WindowsInstaller.dll</HintPath>
-      </Reference>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\customActionsTest\ConsoleApp1\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -66,7 +66,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Resources\cl-container-v1.0.5.zip" />
+    <None Include="Resources\cl-kpi_v1.4.5.zip" />
+    <None Include="Resources\qsSimpleKPI.zip" />
+    <None Include="Resources\sense-navigation_latest.zip" />
     <None Include="Resources\Telemetry Dashboard.qvf" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
