@@ -33,8 +33,11 @@
 
     <InstallExecuteSequence>
       <Custom Action='IsRepositoryRunningAction' Before='InstallFiles' />
+      <Custom Action='RemoveTasksAction' Before='InstallFiles'>REMOVE="ALL"</Custom>
       <Custom Action='ImportAppAction' After='InstallFiles'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action='ImportExtensionsAction' After='InstallFiles'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='SetInstallDirectoryAction' Before='CreateTasksAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='CreateTasksAction' After='InstallFiles'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
     </InstallExecuteSequence>
   </Product>
 
@@ -65,6 +68,7 @@
         <File Source="$(var.ProjectDir)..\fetchMetadata.js" Id="fetchMetadataJS" KeyPath="yes" />
       </Component>
     </ComponentGroup>
+    
     <Component Id="config.js_comp" Guid="19fb555e-896f-427d-913a-7a2fc248f0d3" Win64="yes" Directory="CONFIGFOLDER">
       <File Source="$(var.ProjectDir)..\config\config.js" Id="configJS" KeyPath="yes" />
     </Component>

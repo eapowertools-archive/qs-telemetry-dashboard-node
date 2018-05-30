@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using CustomActions.Helpers;
 using Microsoft.Deployment.WindowsInstaller;
 using Newtonsoft.Json;
@@ -226,6 +227,48 @@ namespace CustomActions
 				}
 			}
 
+			return ActionResult.Success;
+		}
+
+		[CustomAction]
+		public static ActionResult CreateTasks(Session session)
+		{
+			string installDir = session.CustomActionData["InstallDir"];
+
+			// External Task
+			Tuple<HttpStatusCode, string> hasExtension4 = MakeQrsRequest("/externalprogramtask/count?filter=name eq 'TelemetryDashboard-1-Generate-Metadata'", HTTPMethod.GET);
+			if (hasExtension4.Item1 != HttpStatusCode.OK)
+			{
+				return ActionResult.Failure;
+			}
+
+			if (JObject.Parse((string)JsonConvert.DeserializeObject(hasExtension4.Item2))["value"].ToObject<int>() == 0)
+			{
+				string body = JsonConvert.SerializeObject(new
+					{
+						path = "..\\ServiceDispatcher\\Node\\node.exe",
+						parameters = installDir + "fetchMetadata.js",
+						name = "TelemetryDashboard-1-Generate-Metadata",
+						taskType = 1,
+						enabled = true,
+						taskSessionTimeout = 1440,
+						maxRetries = 0,
+						impactSecurityAccess = false,
+						schemaPath = "ExternalProgramTask"
+					});
+				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/externalprogramtask", HTTPMethod.POST, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
+				if (importExtensionResponse.Item1 != HttpStatusCode.Created)
+				{
+					return ActionResult.Failure;
+				}
+			}
+
+			return ActionResult.Success;
+		}
+
+		[CustomAction]
+		public static ActionResult RemoveTasks(Session session)
+		{
 			return ActionResult.Success;
 		}
 
