@@ -24,6 +24,7 @@
       <ComponentGroupRef Id="MainJSFiles" />
       <ComponentGroupRef Id="LibComponentGroup"/>
       <ComponentGroupRef Id="NodeModulesComponentGroup"/>
+      <ComponentGroupRef Id="CertFiles"/>
     </Feature>
 
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
@@ -33,18 +34,35 @@
 
     <InstallExecuteSequence>
       <Custom Action='IsRepositoryRunningAction' Before='InstallFiles' />
+      <Custom Action='RemoveTasksAction' Before='InstallFiles'>REMOVE="ALL"</Custom>
       <Custom Action='ImportAppAction' After='InstallFiles'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action='ImportExtensionsAction' After='InstallFiles'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='SetInstallDirectoryForCreateAction' Before='CreateTasksAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='CreateTasksAction' After='InstallFiles'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
     </InstallExecuteSequence>
   </Product>
 
   <Fragment>
     <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="CommonAppDataFolder">
+        <Directory Id="PDQlik" Name="Qlik">
+          <Directory Id="PDSense" Name="Sense">
+            <Directory Id="PDRepository" Name="Repository">
+              <Directory Id="PDExportedCerts" Name="Exported Certificates">
+                <Directory Id="PDLocalCerts" Name=".Local Certificates">
+                  
+                </Directory>
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
       <Directory Id="ProgramFiles64Folder">
         <Directory Id="Qlik" Name="Qlik">
           <Directory Id="Sense" Name="Sense">
             <Directory Id="EAPowerTools" Name="EAPowerTools">
               <Directory Id="INSTALLFOLDER" Name="TelemetryDashboard" >
+                <Directory Id="CERTSFOLDER" Name="certs" />
                 <Directory Id="CONFIGFOLDER" Name="config" />
               </Directory>
             </Directory>
@@ -65,9 +83,25 @@
         <File Source="$(var.ProjectDir)..\fetchMetadata.js" Id="fetchMetadataJS" KeyPath="yes" />
       </Component>
     </ComponentGroup>
+    
     <Component Id="config.js_comp" Guid="19fb555e-896f-427d-913a-7a2fc248f0d3" Win64="yes" Directory="CONFIGFOLDER">
       <File Source="$(var.ProjectDir)..\config\config.js" Id="configJS" KeyPath="yes" />
     </Component>
+
+    <ComponentGroup Id="CertFiles" Directory="CERTSFOLDER">
+      <Component Id="root.pem_comp" Guid="e5e911a5-8327-48ff-b6dd-7d5bbc0d656b" KeyPath="yes">
+        <CopyFile Id="rootPemCopy" SourceProperty="PDLocalCerts" SourceName="root.pem" DestinationProperty="CERTSFOLDER" DestinationName="root.pem" />
+        <RemoveFile Id="rootPemRemove" Name="root.pem" On="uninstall" />
+      </Component>
+      <Component Id="client.pem_comp" Guid="8725e8e3-43ba-4295-9963-60d93d13b679" KeyPath="yes">
+        <CopyFile Id="clientPemCopy" SourceProperty="PDLocalCerts" SourceName="client.pem" DestinationProperty="CERTSFOLDER" DestinationName="client.pem" />
+        <RemoveFile Id="clientPemRemove" Name="client.pem" On="uninstall" />
+      </Component>
+      <Component Id="client_key.pem_comp" Guid="29597a2c-5a78-486d-8fed-6e51888d6620" KeyPath="yes">
+        <CopyFile Id="clientKeyPemCopy" SourceProperty="PDLocalCerts" SourceName="client_key.pem" DestinationProperty="CERTSFOLDER" DestinationName="client_key.pem" />
+        <RemoveFile Id="clientKeyPemRemove" Name="client_key.pem" On="uninstall" />
+      </Component>
+    </ComponentGroup>
   </Fragment>
 
 </Wix>
