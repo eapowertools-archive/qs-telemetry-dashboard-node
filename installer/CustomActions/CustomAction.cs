@@ -247,7 +247,7 @@ namespace CustomActions
 				string body = JsonConvert.SerializeObject(new
 					{
 						path = "..\\ServiceDispatcher\\Node\\node.exe",
-						parameters = installDir + "fetchMetadata.js",
+						parameters = "\"" + installDir + "fetchMetadata.js\"",
 						name = "TelemetryDashboard-1-Generate-Metadata",
 						taskType = 1,
 						enabled = true,

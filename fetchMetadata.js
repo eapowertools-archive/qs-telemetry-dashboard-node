@@ -23,13 +23,16 @@ stringExtensions();
 // repository connection setup
 var qrsConfig = {
     hostname: config.global.hostname,
-    localCertPath: config.global.certificatesPath
+    certificates: {
+        certFile: (path.isAbsolute(config.global.certificatesPath) ? config.global.certificatesPath : path.join(__dirname, config.global.certificatesPath)) + "client.pem",
+        keyFile: (path.isAbsolute(config.global.certificatesPath) ? config.global.certificatesPath : path.join(__dirname, config.global.certificatesPath)) + "client_key.pem"
+    }
 }
 var qrsInteractInstance = new qrsInteract(qrsConfig);
 
 
 // Helper function to read the contents of the certificate files:
-const readCert = filename => fs.readFileSync(path.resolve(config.global.certificatesPath, filename));
+const readCert = filename => fs.readFileSync((path.isAbsolute(config.global.certificatesPath) ? config.global.certificatesPath : path.join(__dirname, config.global.certificatesPath)) + filename);
 
 // App specific session func
 function createSession(appId) {
@@ -73,6 +76,12 @@ try {
     fs.mkdirSync(config.filenames.outputDir);
 } catch (err) {
     console.log("Output folder already created.");
+}
+
+// delete all files in folder
+var files = fs.readdirSync(config.filenames.outputDir)
+for (var file in files) {
+    fs.unlinkSync(file);
 }
 
 writeHeaders.writeAllHeaders(config.filenames.outputDir);
