@@ -2,7 +2,7 @@
   "name": "mini-meta-fetcher",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "fetchMetadata.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,5 +13,9 @@
     "enigma.js": "^2.2.0",
     "qrs-interact": "^3.0.0",
     "ws": "^4.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/eapowertools/qs-meta-fetcher.git"
   }
 }
