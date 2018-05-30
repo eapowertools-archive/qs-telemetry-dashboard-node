@@ -58,7 +58,7 @@
   <ItemGroup>
     <ProjectReference Include="CustomActions\CustomActions.csproj">
       <Name>CustomActions</Name>
-      <Project>{b46c290d-3ff4-4cb1-b076-f30548a91164}</Project>
+      <Project>{dc4f450c-71f1-4748-88e8-1fada6f38b0a}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>

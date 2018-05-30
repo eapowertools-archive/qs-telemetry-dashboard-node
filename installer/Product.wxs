@@ -3,7 +3,7 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Id="*" Name="TelemetryDashboard" Language="1033" Version="1.0.0.0" Manufacturer="EA Americas"
            UpgradeCode="6827879d-8349-4430-b2cb-02e094803c2e" Codepage="1252">
-    <Package Platform="x64" InstallerVersion="200" Compressed="yes" InstallScope="perMachine" SummaryCodepage="1252" />
+    <Package Platform="x64" InstallerVersion="200" Compressed="yes" InstallPrivileges="elevated" InstallScope="perMachine" SummaryCodepage="1252" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
@@ -33,7 +33,8 @@
 
     <InstallExecuteSequence>
       <Custom Action='IsRepositoryRunningAction' Before='InstallFiles' />
-      <Custom Action='ImportAppAction' After='InstallFiles' />
+      <Custom Action='ImportAppAction' After='InstallFiles'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='ImportExtensionsAction' After='InstallFiles'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
     </InstallExecuteSequence>
   </Product>
 
