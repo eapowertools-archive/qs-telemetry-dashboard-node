@@ -6,7 +6,7 @@ var config = {
         userDirectory: 'INTERNAL',
         userId: 'sa_api',
         // certificatesPath: '/Users/eps/Documents/Certificates'
-        certificatesPath: 'C:/ProgramData/Qlik/Sense/Repository/Exported Certificates/.Local Certificates/'
+        certificatesPath: './certs/'
     },
     engine: {
         port: 4747,
