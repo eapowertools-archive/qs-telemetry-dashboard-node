@@ -32,10 +32,10 @@
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="bin\Debug\LibDirectory.wxs">
+    <Compile Include="bin\x64\Debug\LibDirectory.wxs">
       <Link>Generated-DirectoryFiles\LibDirectory.wxs</Link>
     </Compile>
-    <Compile Include="bin\Debug\NodeModuleDirectory.wxs">
+    <Compile Include="bin\x64\Debug\NodeModuleDirectory.wxs">
       <Link>Generated-DirectoryFiles\NodeModuleDirectory.wxs</Link>
     </Compile>
     <Compile Include="ca.wxs" />
