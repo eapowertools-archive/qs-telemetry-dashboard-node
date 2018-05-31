@@ -17,6 +17,7 @@ const users = require('./lib/getUsers');
 const sheets = require('./lib/getSheets');
 const apps = require('./lib/getApps');
 const appsEngine = require('./lib/getAppsEngine');
+var writeCSV = require('./lib/writeCSV');
 
 stringExtensions();
 
@@ -107,7 +108,7 @@ apps.writeToFile(qrsInteractInstance, appsPath).then(function (ids) {
         console.log("Getting data for app: " + element);
         var appSession = createSession(element);
         var dataRow = [];
-        dataRow.push(element['app']['id']);
+        dataRow.push(element);
         dataRow.push(new Date().toJSON());
         return appsEngine.writeToFile(appSession, element, sessionObjectParams, visualizationsPath, metricsPath).then(function () {
             console.log("Done app " + (index + 1) + " of " + ids.length);
