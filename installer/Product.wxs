@@ -39,6 +39,8 @@
       <Custom Action='ImportExtensionsAction' After='InstallFiles'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action='SetInstallDirectoryForCreateAction' Before='CreateTasksAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action='CreateTasksAction' After='InstallFiles'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='SetInstallDirectoryForCertsAction' Before='CopyCertsAction'>NOT Installed</Custom>
+      <Custom Action='CopyCertsAction' After='InstallFiles'>NOT Installed</Custom>
     </InstallExecuteSequence>
   </Product>
 

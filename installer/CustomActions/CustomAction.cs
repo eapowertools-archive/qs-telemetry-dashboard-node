@@ -235,28 +235,106 @@ namespace CustomActions
 		{
 			string installDir = session.CustomActionData["InstallDir"];
 
+			string externalTaskID = "";
 			// External Task
-			Tuple<HttpStatusCode, string> hasExtension4 = MakeQrsRequest("/externalprogramtask/count?filter=name eq 'TelemetryDashboard-1-Generate-Metadata'", HTTPMethod.GET);
-			if (hasExtension4.Item1 != HttpStatusCode.OK)
+			Tuple<HttpStatusCode, string> hasExternalTask = MakeQrsRequest("/externalprogramtask/count?filter=name eq 'TelemetryDashboard-1-Generate-Metadata'", HTTPMethod.GET);
+			if (hasExternalTask.Item1 != HttpStatusCode.OK)
 			{
 				return ActionResult.Failure;
 			}
 
-			if (JObject.Parse((string)JsonConvert.DeserializeObject(hasExtension4.Item2))["value"].ToObject<int>() == 0)
+			if (JObject.Parse((string)JsonConvert.DeserializeObject(hasExternalTask.Item2))["value"].ToObject<int>() == 0)
 			{
-				string body = JsonConvert.SerializeObject(new
+				string body = @"
+				{
+					'path': '..\\ServiceDispatcher\\Node\\node.exe',
+					'parameters': '""" + installDir + @"fetchMetadata.js""',
+					'name': 'TelemetryDashboard-1-Generate-Metadata',
+					'taskType': 1,
+					'enabled': true,
+					'taskSessionTimeout': 1440,
+					'maxRetries': 0,
+					'impactSecurityAccess': false,
+					'schemaPath': 'ExternalProgramTask'
+				}";
+				Tuple<HttpStatusCode, string> createExternalTask = MakeQrsRequest("/externalprogramtask", HTTPMethod.POST, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
+				if (createExternalTask.Item1 != HttpStatusCode.Created)
+				{
+					return ActionResult.Failure;
+				}
+				else
+				{
+					externalTaskID = JObject.Parse((string)JsonConvert.DeserializeObject(createExternalTask.Item2))["id"].ToString();
+				}
+			}
+			else
+			{
+				Tuple<HttpStatusCode, string> getExternalTaskId = MakeQrsRequest("/externalprogramtask?filter=name eq 'TelemetryDashboard-1-Generate-Metadata'", HTTPMethod.GET);
+				externalTaskID = JArray.Parse((string)JsonConvert.DeserializeObject(getExternalTaskId.Item2))[0]["id"].ToString();
+
+			}
+
+			// Reload Task
+			Tuple<HttpStatusCode, string> hasReloadTask = MakeQrsRequest("/reloadtask/count?filter=name eq 'TelemetryDashboard-2-Reload-Dashboard'", HTTPMethod.GET);
+			if (hasReloadTask.Item1 != HttpStatusCode.OK)
+			{
+				return ActionResult.Failure;
+			}
+
+			if (JObject.Parse((string)JsonConvert.DeserializeObject(hasReloadTask.Item2))["value"].ToObject<int>() == 0)
+			{
+				// Get AppID for Telemetry Dashboard App
+				Tuple<HttpStatusCode, string> getAppID = MakeQrsRequest("/app?filter=name eq 'Telemetry Dashboard'", HTTPMethod.GET);
+				string appId = JArray.Parse((string)JsonConvert.DeserializeObject(getAppID.Item2))[0]["id"].ToString();
+
+				string body = @"
 					{
-						path = "..\\ServiceDispatcher\\Node\\node.exe",
-						parameters = "\"" + installDir + "fetchMetadata.js\"",
-						name = "TelemetryDashboard-1-Generate-Metadata",
-						taskType = 1,
-						enabled = true,
-						taskSessionTimeout = 1440,
-						maxRetries = 0,
-						impactSecurityAccess = false,
-						schemaPath = "ExternalProgramTask"
-					});
-				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/externalprogramtask", HTTPMethod.POST, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
+						'compositeEvents': [
+						{
+							'compositeRules': [
+							{
+								'externalProgramTask': {
+									'id': '" + externalTaskID + @"',
+									'name': 'TelemetryDashboard-1-Generate-Metadata'
+								},
+								'ruleState': 1
+							}
+							],
+							'enabled': true,
+							'eventType': 1,
+							'name': 'telemetry-metadata-trigger',
+							'privileges': [
+								'read',
+								'update',
+								'create',
+								'delete'
+							],
+							'timeConstraint': {
+								'days': 0,
+								'hours': 0,
+								'minutes': 360,
+								'seconds': 0
+							}
+						}
+						],
+						'schemaEvents': [],
+						'task': {
+							'app': {
+								'id': '" + appId + @"',
+								'name': 'Telemetry Dashboard'
+							},
+							'customProperties': [],
+							'enabled': true,
+							'isManuallyTriggered': false,
+							'maxRetries': 0,
+							'name': 'TelemetryDashboard-2-Reload-Dashboard',
+							'tags': [],
+							'taskSessionTimeout': 1440,
+							'taskType': 0
+						}
+					}";
+
+				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/reloadtask/create", HTTPMethod.POST, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
 				if (importExtensionResponse.Item1 != HttpStatusCode.Created)
 				{
 					return ActionResult.Failure;
@@ -267,8 +345,33 @@ namespace CustomActions
 		}
 
 		[CustomAction]
+		public static ActionResult CopyCertificates(Session session)
+		{
+			string installDir = session.CustomActionData["InstallDir"];
+			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\root.pem", Path.Combine(installDir, "certs\\root.pem"));
+			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client.pem", Path.Combine(installDir, "certs\\client.pem"));
+			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client_key.pem", Path.Combine(installDir, "certs\\client_key.pem"));
+
+			return ActionResult.Success;
+		}
+
+		[CustomAction]
 		public static ActionResult RemoveTasks(Session session)
 		{
+			Tuple<HttpStatusCode, string> getReloadTaskId = MakeQrsRequest("/reloadtask?filter=name eq 'TelemetryDashboard-2-Reload-Dashboard'", HTTPMethod.GET);
+			if (getReloadTaskId.Item1 == HttpStatusCode.OK)
+			{
+				string reloadTaskId = JArray.Parse((string)JsonConvert.DeserializeObject(getReloadTaskId.Item2))[0]["id"].ToString();
+				MakeQrsRequest("/reloadtask/" + reloadTaskId, HTTPMethod.DELETE);
+			}
+
+			Tuple<HttpStatusCode, string> getExternalTaskId = MakeQrsRequest("/externalprogramtask?filter=name eq 'TelemetryDashboard-1-Generate-Metadata'", HTTPMethod.GET);
+			if (getExternalTaskId.Item1 == HttpStatusCode.OK)
+			{
+				string externalTaskId = JArray.Parse((string)JsonConvert.DeserializeObject(getExternalTaskId.Item2))[0]["id"].ToString();
+				MakeQrsRequest("/externalprogramtask/" + externalTaskId, HTTPMethod.DELETE);
+			}
+
 			return ActionResult.Success;
 		}
 
