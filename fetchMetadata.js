@@ -80,9 +80,9 @@ try {
 
 // delete all files in folder
 var files = fs.readdirSync(config.filenames.outputDir)
-for (var file in files) {
-    fs.unlinkSync(file);
-}
+files.forEach(function (file) {
+    fs.unlinkSync(path.join(config.filenames.outputDir, file));
+});
 
 writeHeaders.writeAllHeaders(config.filenames.outputDir);
 
