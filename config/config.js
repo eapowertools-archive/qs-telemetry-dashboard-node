@@ -17,17 +17,18 @@ var config = {
     },
     filenames: {
         outputDir: "C:/ProgramData/Qlik/Sense/TelemetryMetadata/",
-        variables_table: "variables.csv",
-        masterMetrics_table: "masterMetrics.csv",
+        outputStatus_table: "outputStatus.csv",
         apps_table: "apps.csv",
         sheets_table: "sheets.csv",
         users_table: "users.csv",
         visualizations_table: "visualizations.csv",
         metrics_table: "metrics.csv",
-        visualizationsMasterMetrics_table: "visualizations_masterMetrics.csv",
         customPropertyDefinitions_table: "customPropertyDefinitions.csv",
         entityCustomPropertyMap_table: "entity_customProperty.csv",
-        nonMasterMetrics_table: "nonMasterMetrics.csv"
+        // variables_table: "variables.csv",
+        // masterMetrics_table: "masterMetrics.csv",
+        // visualizationsMasterMetrics_table: "visualizations_masterMetrics.csv",
+        // nonMasterMetrics_table: "nonMasterMetrics.csv",
     }
 };
 

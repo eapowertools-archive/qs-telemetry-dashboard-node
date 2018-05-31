@@ -102,11 +102,24 @@ var appsPath = config.filenames.outputDir + config.filenames.apps_table;
 apps.writeToFile(qrsInteractInstance, appsPath).then(function (ids) {
     var visualizationsPath = config.filenames.outputDir + config.filenames.visualizations_table;
     var metricsPath = config.filenames.outputDir + config.filenames.metrics_table;
+    var dataMatrix = [];
     return promise.each(ids, (element, index) => {
         console.log("Getting data for app: " + element);
         var appSession = createSession(element);
+        var dataRow = [];
+        dataRow.push(element['app']['id']);
+        dataRow.push(new Date().toJSON());
         return appsEngine.writeToFile(appSession, element, sessionObjectParams, visualizationsPath, metricsPath).then(function () {
             console.log("Done app " + (index + 1) + " of " + ids.length);
+            dataRow.push("Success");
+            dataRow.push("OK");
+        }).catch(function (err) {
+            dataRow.push("Fail");
+            dataRow.push(err);
+        }).then(function () {
+            dataMatrix.push(dataRow);
         });
+    }).then(function () {
+        writeCSV.writeDataToFile(config.filenames.outputDir + config.filenames.outputStatus_table, dataMatrix);
     });
 });
