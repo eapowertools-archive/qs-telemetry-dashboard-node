@@ -156,7 +156,7 @@ namespace CustomActions
 			}
 
 			// import app
-			Tuple<HttpStatusCode, string> importAppResponse = MakeQrsRequest("/app/upload?name=Telemetry Dashboard", HTTPMethod.POST, HTTPContentType.app, Properties.Resources.Telemetry_Dashboard);
+			MakeQrsRequest("/app/upload?name=Telemetry Dashboard", HTTPMethod.POST, HTTPContentType.app, Properties.Resources.Telemetry_Dashboard);
 			return ActionResult.Success;
 		}
 
@@ -242,9 +242,9 @@ namespace CustomActions
 			{
 				return ActionResult.Failure;
 			}
-
 			if (JObject.Parse((string)JsonConvert.DeserializeObject(hasExternalTask.Item2))["value"].ToObject<int>() == 0)
 			{
+				installDir = installDir.Replace("\\", "\\\\");
 				string body = @"
 				{
 					'path': '..\\ServiceDispatcher\\Node\\node.exe',
@@ -348,9 +348,9 @@ namespace CustomActions
 		public static ActionResult CopyCertificates(Session session)
 		{
 			string installDir = session.CustomActionData["InstallDir"];
-			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\root.pem", Path.Combine(installDir, "certs\\root.pem"));
-			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client.pem", Path.Combine(installDir, "certs\\client.pem"));
-			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client_key.pem", Path.Combine(installDir, "certs\\client_key.pem"));
+			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\root.pem", Path.Combine(installDir, "certs\\root.pem"), true);
+			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client.pem", Path.Combine(installDir, "certs\\client.pem"), true);
+			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client_key.pem", Path.Combine(installDir, "certs\\client_key.pem"), true);
 
 			return ActionResult.Success;
 		}
