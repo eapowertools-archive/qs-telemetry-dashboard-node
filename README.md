@@ -54,3 +54,16 @@ Note that is possible to track _only_ process time or peak memory.  It is not re
 	 - **TraverseTime**: Time spent running the inference engine (i.e, the green, white, and grey).
 
 ### Important Engine Operations
+The **Method** column details each engine operation and are too numerous to completely detail. The most relevent methods to investigate are as follows and will be the most common methods that show up in the logs if a **Warning** or  **Error** log entry is written.
+
+Method|Description
+------|-----------
+Global::OpenApp|Opening an application
+Doc::DoReload, Doc::DoReloadEx|Reloading an application
+Doc::DoSave|Saving an application
+GenericObject::GetLayout|Calculating a hypercube (e.g. chart object)
+
+
+#### Comments
+ - For best overall representation of the time it takes for an operation to complete, use ProcessTime.
+ - _About ERROR and WARNING log level designations:_ These designations were used because it conveniently fit into the existing logging and QMC frameworks. A row of telemetry information written out as an error or warning _*does not at all mean the engine had a warning or error condition*_ that should require investigation or remedy unless you are interested in optimizing performance. It is simply a means of reporting on the thresholds set within the engine settings.ini file and it provides a means to log relevant information without generating overly verbose log files.
