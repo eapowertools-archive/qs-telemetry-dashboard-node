@@ -1,5 +1,5 @@
 # Qlik Sense Telemetry Dashboard
-##### Download [Here](https://github.com/eapowertools/qs-telemetry-dashboard/releases)
+#### Download Latest [Here](https://github.com/eapowertools/qs-telemetry-dashboard/releases)
 With the February 2018 of Qlik Sense, it is possible to capture granular usage metrics from the QIX in-memory engine based on configurable thresholds.  This provides the ability to capture CPU and RAM utilization of individual chart objects, CPU and RAM utilization of reload tasks, and more.
 
 ## Enable Telemetry Logging
