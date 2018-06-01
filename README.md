@@ -4,8 +4,7 @@ With the February 2018 of Qlik Sense, it is possible to capture granular usage m
 
 ### Enable Telemetry Logging
 *	In the Qlik Sense Management Console, navigate to Engines > choose an engine > Logging > QIX Performance log level.  Choose a value:
-
-  * Off: No logging will occur
-  * Error: Activity meeting the ‘error’ threshold will be logged
-  * Warning: Activity meeting the ‘error’ and ‘warning’ thresholds will be logged
+  * Off: No logging will occur  
+  * Error: Activity meeting the ‘error’ threshold will be logged  
+  * Warning: Activity meeting the ‘error’ and ‘warning’ thresholds will be logged  
   * Info: All activity will be logged
