@@ -8,3 +8,11 @@ With the February 2018 of Qlik Sense, it is possible to capture granular usage m
   * Error: Activity meeting the ‘error’ threshold will be logged  
   * Warning: Activity meeting the ‘error’ and ‘warning’ thresholds will be logged  
   * Info: All activity will be logged
+
+
+
+ - List item
+ - d
+	 - fdsf
+
+sdfdsf
