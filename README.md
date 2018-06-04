@@ -46,6 +46,7 @@ Note that is possible to track _only_ process time or peak memory.  It is not re
 
 
 ## Reading the logs
+ - **_IMPORTANT:_** If your ArchiveLog path is not resolving, you may need to change the `vComputerName` variable on roughly line 20 in the script. Here you can change the path it looks for (e.g. different name or need to append a domain name). 
  - Telemetry data is logged to C:\ProgramData\Qlik\Sense\Log\Engine\Trace\<hostname>_QixPerformance_Engine.txt and rolls to the ArchiveLog folder in your ServiceCluster share.
  - In addition to the common fields found described here (http://help.qlik.com/en-US/sense/November2017/Subsystems/PlanningQlikSenseDeployments/Content/Deployment/Server-Logging-Tracing-Log-File-Format-Common-Fields.htm), fields relevent to telemetry are:
 	 - **Level**: The logging level threshold the engine operation met.
