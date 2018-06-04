@@ -74,3 +74,7 @@ GenericObject::GetLayout|Calculating a hypercube (e.g. chart object)
 #### Comments
  - For best overall representation of the time it takes for an operation to complete, use ProcessTime.
  - _About ERROR and WARNING log level designations:_ These designations were used because it conveniently fit into the existing logging and QMC frameworks. A row of telemetry information written out as an error or warning **_does not at all mean the engine had a warning or error condition_** that should require investigation or remedy unless you are interested in optimizing performance. It is simply a means of reporting on the thresholds set within the engine settings.ini file and it provides a means to log relevant information without generating overly verbose log files.
+ 
+ 
+ ## Uninstalling
+  - The uninstaller will remove the code which fetches the metadata, and the tasks. It will leave the extensions, app, and data connections in place. If you are uninstalling OR upgrading and want the latest versions of the extensions used or the app, remove or rename the old resources.
