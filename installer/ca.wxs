@@ -10,6 +10,6 @@
     <CustomAction Id='SetInstallDirectoryForCertsAction' Property='CopyCertsAction' Value='InstallDir=[INSTALLFOLDER]' />
     <CustomAction Id='CopyCertsAction' BinaryKey='CABin' DllEntry='CopyCertificates' Impersonate='no' Execute='deferred' Return='check'/>
 
-    <Binary Id='CABin' SourceFile='./CustomActions/bin/x64/Debug/CustomActions.CA.dll'/>
+    <Binary Id='CABin' SourceFile='./CustomActions/bin/x64/$(var.Configuration)/CustomActions.CA.dll'/>
 	</Fragment>
 </Wix>

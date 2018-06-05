@@ -1,6 +1,6 @@
 {
-  "name": "mini-meta-fetcher",
-  "version": "1.0.0",
+  "name": "telemetry-dashboard-meta-fetcher",
+  "version": "1.0.1",
   "description": "",
   "main": "fetchMetadata.js",
   "scripts": {
@@ -16,6 +16,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/eapowertools/qs-meta-fetcher.git"
+    "url": "git://github.com/eapowertools/qs-telemetry-dashboard.git"
   }
 }
