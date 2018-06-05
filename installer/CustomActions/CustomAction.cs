@@ -361,15 +361,21 @@ namespace CustomActions
 			Tuple<HttpStatusCode, string> getReloadTaskId = MakeQrsRequest("/reloadtask?filter=name eq 'TelemetryDashboard-2-Reload-Dashboard'", HTTPMethod.GET);
 			if (getReloadTaskId.Item1 == HttpStatusCode.OK)
 			{
-				string reloadTaskId = JArray.Parse((string)JsonConvert.DeserializeObject(getReloadTaskId.Item2))[0]["id"].ToString();
-				MakeQrsRequest("/reloadtask/" + reloadTaskId, HTTPMethod.DELETE);
+				JArray reloadTasks = JArray.Parse((string)JsonConvert.DeserializeObject(getReloadTaskId.Item2));
+				for (int i = 0; i < reloadTasks.Count; i++)
+				{
+					MakeQrsRequest("/reloadtask/" + reloadTasks[i]["id"].ToString(), HTTPMethod.DELETE);
+				}
 			}
 
 			Tuple<HttpStatusCode, string> getExternalTaskId = MakeQrsRequest("/externalprogramtask?filter=name eq 'TelemetryDashboard-1-Generate-Metadata'", HTTPMethod.GET);
 			if (getExternalTaskId.Item1 == HttpStatusCode.OK)
 			{
-				string externalTaskId = JArray.Parse((string)JsonConvert.DeserializeObject(getExternalTaskId.Item2))[0]["id"].ToString();
-				MakeQrsRequest("/externalprogramtask/" + externalTaskId, HTTPMethod.DELETE);
+				JArray externalTasks = JArray.Parse((string)JsonConvert.DeserializeObject(getExternalTaskId.Item2));
+				for (int i = 0; i < externalTasks.Count; i++)
+				{
+					MakeQrsRequest("/externalprogramtask/" + externalTasks[i]["id"].ToString(), HTTPMethod.DELETE);
+				}
 			}
 
 			return ActionResult.Success;
