@@ -362,9 +362,9 @@ namespace CustomActions
 			if (getReloadTaskId.Item1 == HttpStatusCode.OK)
 			{
 				JArray reloadTasks = JArray.Parse((string)JsonConvert.DeserializeObject(getReloadTaskId.Item2));
-				for (int i = 0; i < reloadTasks.Count; i++)
+				foreach (JToken t in reloadTasks)
 				{
-					MakeQrsRequest("/reloadtask/" + reloadTasks[i]["id"].ToString(), HTTPMethod.DELETE);
+					MakeQrsRequest("/reloadtask/" + t["id"], HTTPMethod.DELETE);
 				}
 			}
 
@@ -372,9 +372,9 @@ namespace CustomActions
 			if (getExternalTaskId.Item1 == HttpStatusCode.OK)
 			{
 				JArray externalTasks = JArray.Parse((string)JsonConvert.DeserializeObject(getExternalTaskId.Item2));
-				for (int i = 0; i < externalTasks.Count; i++)
+				foreach (JToken t in externalTasks)
 				{
-					MakeQrsRequest("/externalprogramtask/" + externalTasks[i]["id"].ToString(), HTTPMethod.DELETE);
+					MakeQrsRequest("/externalprogramtask/" + t["id"], HTTPMethod.DELETE);
 				}
 			}
 
