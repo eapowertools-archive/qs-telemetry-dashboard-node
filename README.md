@@ -46,7 +46,8 @@ Note that is possible to track _only_ process time or peak memory.  It is not re
 
 
 ## Reading the logs
- - **_IMPORTANT:_** If your ArchiveLog path is not resolving, you may need to change the `vComputerName` variable on roughly line 20 in the script. Here you can change the path it looks for (e.g. different name or need to append a domain name). 
+ - **_IMPORTANT:_** If your ArchiveLog path is not resolving, you may need to change the `vComputerName` variable on roughly line 20 in the script. Here you can change the path it looks for (e.g. different name or need to append a domain name).
+ - The variable `v#LogDays` sets how many days back you would like to load log files from. The default value is `60` which can be changed in the load script on roughly line 25.
  - Telemetry data is logged to C:\ProgramData\Qlik\Sense\Log\Engine\Trace\<hostname>_QixPerformance_Engine.txt and rolls to the ArchiveLog folder in your ServiceCluster share.
  - In addition to the common fields found described here (http://help.qlik.com/en-US/sense/November2017/Subsystems/PlanningQlikSenseDeployments/Content/Deployment/Server-Logging-Tracing-Log-File-Format-Common-Fields.htm), fields relevent to telemetry are:
 	 - **Level**: The logging level threshold the engine operation met.
@@ -76,5 +77,5 @@ GenericObject::GetLayout|Calculating a hypercube (e.g. chart object)
  - _About ERROR and WARNING log level designations:_ These designations were used because it conveniently fit into the existing logging and QMC frameworks. A row of telemetry information written out as an error or warning **_does not at all mean the engine had a warning or error condition_** that should require investigation or remedy unless you are interested in optimizing performance. It is simply a means of reporting on the thresholds set within the engine settings.ini file and it provides a means to log relevant information without generating overly verbose log files.
  
  
- ## Uninstalling
+ ## Upgrading/Uninstalling
   - The uninstaller will remove the code which fetches the metadata, and the tasks. It will leave the extensions, app, and data connections in place. If you are uninstalling OR upgrading and want the latest versions of the extensions used or the app, remove or rename the old resources.
