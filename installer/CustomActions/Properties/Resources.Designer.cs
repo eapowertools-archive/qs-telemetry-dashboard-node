@@ -63,46 +63,6 @@ namespace CustomActions.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] cl_container {
-            get {
-                object obj = ResourceManager.GetObject("cl_container", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] cl_kpi {
-            get {
-                object obj = ResourceManager.GetObject("cl_kpi", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] qsSimpleKPI {
-            get {
-                object obj = ResourceManager.GetObject("qsSimpleKPI", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] sense_navigation {
-            get {
-                object obj = ResourceManager.GetObject("sense_navigation", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] Telemetry_Dashboard {
             get {
                 object obj = ResourceManager.GetObject("Telemetry_Dashboard", resourceCulture);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" Name="TelemetryDashboard" Language="1033" Version="1.0.2.0" Manufacturer="EA Americas"
+  <Product Id="*" Name="TelemetryDashboard" Language="1033" Version="1.0.3.0" Manufacturer="EA Americas"
            UpgradeCode="6827879d-8349-4430-b2cb-02e094803c2e" Codepage="1252">
     <Package Platform="x64" InstallerVersion="200" Compressed="yes" InstallPrivileges="elevated" InstallScope="perMachine" SummaryCodepage="1252" />
 
@@ -36,8 +36,7 @@
       <Custom Action='IsRepositoryRunningAction' Before='InstallFiles' />
       <Custom Action='ImportAppAction' After='IsRepositoryRunningAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action='RemoveTasksAction' Before='InstallFiles'>REMOVE="ALL"</Custom>
-      <Custom Action='ImportExtensionsAction' After='InstallFiles'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
-      <Custom Action='SetInstallDirectoryForCreateAction' After='ImportExtensionsAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='SetInstallDirectoryForCreateAction' After='InstallFiles'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action='CreateTasksAction' After='SetInstallDirectoryForCreateAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action='SetInstallDirectoryForCertsAction' After='CreateTasksAction'>NOT Installed</Custom>
       <Custom Action='CopyCertsAction' After='SetInstallDirectoryForCertsAction'>NOT Installed</Custom>

@@ -79,10 +79,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Resources\cl-container.zip" />
-    <None Include="Resources\cl-kpi.zip" />
-    <None Include="Resources\qsSimpleKPI.zip" />
-    <None Include="Resources\sense-navigation.zip" />
     <None Include="Resources\Telemetry Dashboard.qvf" />
   </ItemGroup>
   <ItemGroup>
