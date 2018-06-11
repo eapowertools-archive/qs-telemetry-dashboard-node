@@ -1,11 +1,9 @@
 var config = {
     global: {
         delimiter: '`',
-        // hostname: 'desktop-gs8laa5.local',
         hostname: 'localhost',
         userDirectory: 'INTERNAL',
         userId: 'sa_api',
-        // certificatesPath: '/Users/eps/Documents/Certificates'
         certificatesPath: './certs/'
     },
     engine: {
@@ -25,6 +23,8 @@ var config = {
         metrics_table: "metrics.csv",
         customPropertyDefinitions_table: "customPropertyDefinitions.csv",
         entityCustomPropertyMap_table: "entity_customProperty.csv",
+        logLevel_table: "logLevels.csv",
+        systemInfo_table: "systemInfo.csv"
         // variables_table: "variables.csv",
         // masterMetrics_table: "masterMetrics.csv",
         // visualizationsMasterMetrics_table: "visualizations_masterMetrics.csv",

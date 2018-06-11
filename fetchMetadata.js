@@ -11,8 +11,10 @@ const config = require('./config/config.js');
 const schema = require(config.engine.schemaPath);
 const stringExtensions = require('./lib/stringExtensions');
 const writeHeaders = require('./lib/writeHeaders');
+const sysInfo = require('./lib/getSysInfo');
 const customPropertyDefinitions = require('./lib/getCustomPropertyDefinitions');
 const entityCustomPropertyValues = require('./lib/getCustomPropertiesForEntity');
+const logLevels = require('./lib/getLogLevels');
 const users = require('./lib/getUsers');
 const sheets = require('./lib/getSheets');
 const apps = require('./lib/getApps');
@@ -87,11 +89,17 @@ files.forEach(function (file) {
 
 writeHeaders.writeAllHeaders(config.filenames.outputDir);
 
+var systemInfoPath = config.filenames.outputDir + config.filenames.systemInfo_table;
+sysInfo.writeToFile(qrsInteractInstance, systemInfoPath);
+
 var customPropertyDefinitionPath = config.filenames.outputDir + config.filenames.customPropertyDefinitions_table;
 customPropertyDefinitions.writeToFile(qrsInteractInstance, customPropertyDefinitionPath);
 
 var customPropertiesPath = config.filenames.outputDir + config.filenames.entityCustomPropertyMap_table;
 entityCustomPropertyValues.writeToFile(qrsInteractInstance, "app", customPropertiesPath);
+
+var logLevelsPath = config.filenames.outputDir + config.filenames.logLevel_table;
+logLevels.writeToFile(qrsInteractInstance, logLevelsPath);
 
 var usersPath = config.filenames.outputDir + config.filenames.users_table;
 users.writeToFile(qrsInteractInstance, usersPath);
