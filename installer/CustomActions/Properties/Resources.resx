@@ -118,18 +118,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="cl_container" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cl-container.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="cl_kpi" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cl-kpi.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="qsSimpleKPI" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\qsSimpleKPI.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="sense_navigation" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\sense-navigation.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="Telemetry_Dashboard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Telemetry Dashboard.qvf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
