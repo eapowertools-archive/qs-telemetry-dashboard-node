@@ -19,7 +19,7 @@
       <![CDATA[Installed OR QRSKEY]]>
     </Condition>
 
-    <Feature Id="Complete" Title="Telemetry Dashboard" Description="Telemetry Dashboard and Metafetching scripts." ConfigurableDirectory="INSTALLFOLDER" Level="1">
+    <Feature Id="Complete" Title="Telemetry Dashboard" Description="Telemetry Dashboard and Metafetching scripts." Level="1">
       <ComponentRef Id="config.js_comp"/>
       <ComponentGroupRef Id="MainJSFiles" />
       <ComponentGroupRef Id="LibComponentGroup"/>
@@ -27,16 +27,16 @@
       <ComponentGroupRef Id="CertFiles"/>
     </Feature>
 
-    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
-    <UIRef Id="WixUI_InstallDir" />
+    <UIRef Id="WixUI_Minimal" />
     <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
     <WixVariable Id="WixUIDialogBmp" Value="dialog.bmp" />
 
     <InstallExecuteSequence>
-      <Custom Action='IsRepositoryRunningAction' Before='InstallFiles' />
-      <Custom Action='ImportAppAction' After='IsRepositoryRunningAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='GetInstallDir' Before='CostInitialize' />
+      <Custom Action='IsRepositoryRunningAction' Before='GetInstallDir' />
+      <Custom Action='ImportAppAction' After='InstallFiles'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action='RemoveTasksAction' Before='InstallFiles'>REMOVE="ALL"</Custom>
-      <Custom Action='SetInstallDirectoryForCreateAction' After='InstallFiles'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='SetInstallDirectoryForCreateAction' After='ImportAppAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action='CreateTasksAction' After='SetInstallDirectoryForCreateAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action='SetInstallDirectoryForCertsAction' After='CreateTasksAction'>NOT Installed</Custom>
       <Custom Action='CopyCertsAction' After='SetInstallDirectoryForCertsAction'>NOT Installed</Custom>
@@ -44,6 +44,7 @@
   </Product>
 
   <Fragment>
+
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="CommonAppDataFolder">
         <Directory Id="PDQlik" Name="Qlik">
@@ -58,16 +59,10 @@
           </Directory>
         </Directory>
       </Directory>
-      <Directory Id="ProgramFiles64Folder">
-        <Directory Id="Qlik" Name="Qlik">
-          <Directory Id="Sense" Name="Sense">
-            <Directory Id="EAPowerTools" Name="EAPowerTools">
-              <Directory Id="INSTALLFOLDER" Name="TelemetryDashboard" >
-                <Directory Id="CERTSFOLDER" Name="certs" />
-                <Directory Id="CONFIGFOLDER" Name="config" />
-              </Directory>
-            </Directory>
-          </Directory>
+      <Directory Id='SHAREDRIVE'>
+        <Directory Id="INSTALLFOLDER" Name="TelemetryDashboard" >
+          <Directory Id="CERTSFOLDER" Name="certs" />
+          <Directory Id="CONFIGFOLDER" Name="config" />
         </Directory>
       </Directory>
     </Directory>

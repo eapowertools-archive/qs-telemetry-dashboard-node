@@ -125,6 +125,24 @@ namespace CustomActions
 			return new Tuple<HttpStatusCode, string>(responseCode, responseString);
 		}
 
+		[CustomAction]
+		public static ActionResult GetInstallDir(Session session)
+		{
+			Tuple<HttpStatusCode, string> response = MakeQrsRequest("/servicecluster/full", HTTPMethod.GET);
+			if (response.Item1 == HttpStatusCode.OK)
+			{
+				string installDirFolder = JArray.Parse((string)JsonConvert.DeserializeObject(response.Item2))[0]["settings"]["sharedPersistenceProperties"]["rootFolder"].ToObject<string>();
+				session["INSTALLFOLDER"] = installDirFolder + "\\TelemetryDashboard";
+				session["CERTSFOLDER"] = installDirFolder + "\\TelemetryDashboard\\certs";
+				session["CONFIGFOLDER"] = installDirFolder + "\\TelemetryDashboard\\config";
+				return ActionResult.Success;
+			}
+			else
+			{
+				session.Message(InstallMessage.Error, new Record() { FormatString = "Cannot get the Qlik Sense share folder. The Telemetry Dashboard can only be installed on a shared persistence installation." });
+				return ActionResult.Failure;
+			}
+		}
 
 		[CustomAction]
 		public static ActionResult IsRepositoryRunning(Session session)
