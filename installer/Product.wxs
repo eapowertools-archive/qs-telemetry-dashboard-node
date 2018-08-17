@@ -34,12 +34,15 @@
     <InstallExecuteSequence>
       <Custom Action='GetInstallDir' Before='CostInitialize' />
       <Custom Action='IsRepositoryRunningAction' Before='GetInstallDir' />
-      <Custom Action='ImportAppAction' After='InstallFiles'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action='RemoveTasksAction' Before='InstallFiles'>REMOVE="ALL"</Custom>
+      <Custom Action='SetInstallDirectoryForCertsAction' After='InstallFiles'>NOT Installed</Custom>
+      <Custom Action='CopyCertsAction' After='SetInstallDirectoryForCertsAction'>NOT Installed</Custom>
+      <Custom Action='ImportAppAction' After='CopyCertsAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action='SetInstallDirectoryForCreateAction' After='ImportAppAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action='CreateTasksAction' After='SetInstallDirectoryForCreateAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
-      <Custom Action='SetInstallDirectoryForCertsAction' After='CreateTasksAction'>NOT Installed</Custom>
-      <Custom Action='CopyCertsAction' After='SetInstallDirectoryForCertsAction'>NOT Installed</Custom>
+      <Custom Action='SetDirectoryForSetOutputDirAction' After='CreateTasksAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='SetOutputDirAction' After='SetDirectoryForSetOutputDirAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+
     </InstallExecuteSequence>
   </Product>
 

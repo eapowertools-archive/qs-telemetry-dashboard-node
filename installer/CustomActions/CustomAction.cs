@@ -28,6 +28,9 @@ namespace CustomActions
 	public class CustomActions
 	{
 		private static X509Certificate2 SENSE_CERT = GetCertificate();
+		private static string OUTPUT_FOLDER = "TelemetryDashboard";
+		private static string JS_LIBRARY_FOLDER = "MetadataGenerater";
+		private static string METADATA_OUTPUT = "MetadataOutput";
 
 		private static Tuple<HttpStatusCode, string> MakeQrsRequest(string path, HTTPMethod method, HTTPContentType contentType = HTTPContentType.json, byte[] body = null)
 		{
@@ -132,9 +135,9 @@ namespace CustomActions
 			if (response.Item1 == HttpStatusCode.OK)
 			{
 				string installDirFolder = JArray.Parse((string)JsonConvert.DeserializeObject(response.Item2))[0]["settings"]["sharedPersistenceProperties"]["rootFolder"].ToObject<string>();
-				session["INSTALLFOLDER"] = installDirFolder + "\\TelemetryDashboard";
-				session["CERTSFOLDER"] = installDirFolder + "\\TelemetryDashboard\\certs";
-				session["CONFIGFOLDER"] = installDirFolder + "\\TelemetryDashboard\\config";
+				session["INSTALLFOLDER"] = installDirFolder + "\\" + OUTPUT_FOLDER + JS_LIBRARY_FOLDER;
+				session["CERTSFOLDER"] = installDirFolder + "\\" + OUTPUT_FOLDER + JS_LIBRARY_FOLDER + "\\certs";
+				session["CONFIGFOLDER"] = installDirFolder + "\\" + OUTPUT_FOLDER + JS_LIBRARY_FOLDER + "\\config";
 				return ActionResult.Success;
 			}
 			else
@@ -142,6 +145,18 @@ namespace CustomActions
 				session.Message(InstallMessage.Error, new Record() { FormatString = "Cannot get the Qlik Sense share folder. The Telemetry Dashboard can only be installed on a shared persistence installation." });
 				return ActionResult.Failure;
 			}
+		}
+
+		[CustomAction]
+		public static ActionResult SetOutputDir(Session session)
+		{
+			string installDir = session.CustomActionData["InstallDir"];
+
+			string text = File.ReadAllText(installDir + "\\config\\config.js");
+			text = text.Replace("outputFolderPlaceholder", installDir + "..\\" + METADATA_OUTPUT);
+			File.WriteAllText(installDir + "\\config\\config.js", text);
+
+			return ActionResult.Success;
 		}
 
 		[CustomAction]
