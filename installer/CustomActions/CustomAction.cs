@@ -191,8 +191,12 @@ namespace CustomActions
 		{
 			string installDir = session.CustomActionData["InstallDir"];
 			string outputDir = Path.Combine(installDir, METADATA_OUTPUT);
-			
 
+			outputDir = outputDir.Replace('\\', '/');
+			if (!outputDir.EndsWith("/"))
+			{
+				outputDir += '/';
+			}
 			string text = File.ReadAllText(installDir + JS_LIBRARY_FOLDER + "\\config\\config.js");
 			text = text.Replace("outputFolderPlaceholder", outputDir);
 			File.WriteAllText(installDir + JS_LIBRARY_FOLDER + "\\config\\config.js", text);
