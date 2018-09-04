@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -136,8 +135,6 @@ namespace CustomActions
 		{
 			string installDir = session["INSTALLFOLDER"];
 
-			session.Log("The install dir is: " + installDir);
-
 			if (!installDir.EndsWith("\\"))
 			{
 				installDir += "\\";
@@ -157,13 +154,10 @@ namespace CustomActions
 
 				installDir = installDir.Substring(0, installDir.Length - (OUTPUT_FOLDER.Length + 1));
 
-				session.Log("The install dir is: " + installDir);
-
 				string[] dirs = Directory.GetDirectories(installDir);
 				for (int i = 0; i < dirs.Length; i++)
 				{
 					dirs[i] = dirs[i].Substring(installDir.Length);
-					session.Log(dirs[i]);
 				}
 
 				if (!(dirs.Contains("Apps") && dirs.Contains("ArchivedLogs") && dirs.Contains("CustomData") && dirs.Contains("StaticContent")))
