@@ -254,7 +254,7 @@ namespace CustomActions
 				string body = @"
 				{
 					'path': '..\\ServiceDispatcher\\Node\\node.exe',
-					'parameters': '""" + Path.Combine(installDir, JS_LIBRARY_FOLDER) + @"fetchMetadata.js""',
+					'parameters': '""" + Path.Combine(installDir, JS_LIBRARY_FOLDER) + @"\\fetchMetadata.js""',
 					'name': 'TelemetryDashboard-1-Generate-Metadata',
 					'taskType': 1,
 					'enabled': true,
