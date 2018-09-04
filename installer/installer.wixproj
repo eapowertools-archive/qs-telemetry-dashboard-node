@@ -32,7 +32,7 @@
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="bin\x64\$(Configuration)\LibDirectory.wxs">
+    <Compile Include="bin\x64\Release\LibDirectory.wxs">
       <Link>Generated-DirectoryFiles\LibDirectory.wxs</Link>
     </Compile>
     <Compile Include="bin\x64\$(Configuration)\NodeModuleDirectory.wxs">
@@ -80,11 +80,11 @@
     <Error Condition="!Exists('packages\WiX.3.11.1\build\wix.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\WiX.3.11.1\build\wix.props'))" />
   </Target>
   <PropertyGroup>
-    <PreBuildEvent>"%25WIX%25\bin\heat.exe" dir "$(ProjectDir)\..\node_modules" -dr INSTALLFOLDER -gg -sfrag -template fragment -cg NodeModulesComponentGroup -var var.NodeModulesPath -out NodeModuleDirectory.wxs
-"%25WIX%25\bin\heat.exe" dir "$(ProjectDir)\..\lib" -dr INSTALLFOLDER -gg -sfrag -template fragment -cg LibComponentGroup -var var.LibPath -out LibDirectory.wxs</PreBuildEvent>
+    <PostBuildEvent />
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent />
+    <PreBuildEvent>"%25WIX%25\bin\heat.exe" dir "$(ProjectDir)\..\node_modules" -dr JSLIBRARYFOLDER -gg -sfrag -template fragment -cg NodeModulesComponentGroup -var var.NodeModulesPath -out NodeModuleDirectory.wxs
+"%25WIX%25\bin\heat.exe" dir "$(ProjectDir)\..\lib" -dr JSLIBRARYFOLDER -gg -sfrag -template fragment -cg LibComponentGroup -var var.LibPath -out LibDirectory.wxs</PreBuildEvent>
   </PropertyGroup>
   <!--
   To modify your build process, add your task inside one of the targets below and uncomment it.

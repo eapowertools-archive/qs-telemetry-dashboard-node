@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -29,7 +30,7 @@ namespace CustomActions
 
 	public class CustomActions
 	{
-		private static X509Certificate2 SENSE_CERT = GetCertificate();
+		private static Lazy<X509Certificate2> SENSE_CERT = new Lazy<X509Certificate2>(() => GetCertificate());
 		private static string OUTPUT_FOLDER = "TelemetryDashboard";
 		private static string JS_LIBRARY_FOLDER = "MetadataGenerater";
 		private static string METADATA_OUTPUT = "MetadataOutput";
@@ -68,7 +69,7 @@ namespace CustomActions
 			request.Headers.Add("X-Qlik-xrfkey", xrfkey);
 			request.Headers.Add("X-Qlik-User", @"UserDirectory=internal;UserId=sa_api");
 			// Add the certificate to the request and provide the user to execute as
-			request.ClientCertificates.Add(SENSE_CERT);
+			request.ClientCertificates.Add(SENSE_CERT.Value);
 
 			if (method == HTTPMethod.POST || method == HTTPMethod.PUT)
 			{
@@ -133,7 +134,14 @@ namespace CustomActions
 		[CustomAction]
 		public static ActionResult ValidateInstallDir(Session session)
 		{
-			string installDir = session.CustomActionData["InstallDir"];
+			string installDir = session["INSTALLFOLDER"];
+
+			session.Log("The install dir is: " + installDir);
+
+			if (!installDir.EndsWith("\\"))
+			{
+				installDir += "\\";
+			}
 
 			try
 			{
@@ -141,23 +149,26 @@ namespace CustomActions
 				{
 					throw new ArgumentException("Installer path must be a network locattion (start with \"\\\\\").");
 				}
-				if (installDir.EndsWith("\\"))
+
+				if (!installDir.EndsWith("\\" + OUTPUT_FOLDER + "\\"))
 				{
-					installDir = installDir.Substring(0, installDir.Length - 1);
+					throw new ArgumentException("Telemetry Dashboard but be installed to \"" + OUTPUT_FOLDER + "\" folder on share (installer directory must end with \"\\" + OUTPUT_FOLDER + "\").");
 				}
 
-				if (!installDir.EndsWith("\\TelemetryDashboard"))
-				{
-					throw new ArgumentException("Telemetry Dashboard but be installed to \"TelemetryDashboard\" folder on share (installer directory must end with \"\\TelemetryDashboard\").");
-				}
+				installDir = installDir.Substring(0, installDir.Length - (OUTPUT_FOLDER.Length + 1));
 
-				installDir = installDir.Substring(0, installDir.Length - 18);
+				session.Log("The install dir is: " + installDir);
 
 				string[] dirs = Directory.GetDirectories(installDir);
+				for (int i = 0; i < dirs.Length; i++)
+				{
+					dirs[i] = dirs[i].Substring(installDir.Length);
+					session.Log(dirs[i]);
+				}
 
 				if (!(dirs.Contains("Apps") && dirs.Contains("ArchivedLogs") && dirs.Contains("CustomData") && dirs.Contains("StaticContent")))
 				{
-					throw new ArgumentException("Telemetry Dashboard but be installed to Qlik Sense share folder (\"\\TelemetryDashboard\" folder must exist in root Qlik Sense share, example: \'\\\\QlikServer\\QlikShare\\TelemetryDashboard\\\").");
+					throw new ArgumentException("Telemetry Dashboard must but be installed to Qlik Sense share folder (\"\\TelemetryDashboard\" folder must exist in root Qlik Sense share, example: \'\\\\QlikServer\\QlikShare\\TelemetryDashboard\\\").");
 
 				}
 			}
@@ -179,12 +190,12 @@ namespace CustomActions
 		public static ActionResult SetOutputDir(Session session)
 		{
 			string installDir = session.CustomActionData["InstallDir"];
-			string outputDir = Path.Combine(installDir, "..\\" + METADATA_OUTPUT + "\\");
+			string outputDir = Path.Combine(installDir, METADATA_OUTPUT);
 			
 
-			string text = File.ReadAllText(installDir + "\\config\\config.js");
+			string text = File.ReadAllText(installDir + JS_LIBRARY_FOLDER + "\\config\\config.js");
 			text = text.Replace("outputFolderPlaceholder", outputDir);
-			File.WriteAllText(installDir + "\\config\\config.js", text);
+			File.WriteAllText(installDir + JS_LIBRARY_FOLDER + "\\config\\config.js", text);
 
 			return ActionResult.Success;
 		}
@@ -227,6 +238,10 @@ namespace CustomActions
 		public static ActionResult CreateTasks(Session session)
 		{
 			string installDir = session.CustomActionData["InstallDir"];
+			if (!installDir.EndsWith("\\"))
+			{
+				installDir += "\\";
+			}
 
 			string externalTaskID = "";
 			// External Task
@@ -241,7 +256,7 @@ namespace CustomActions
 				string body = @"
 				{
 					'path': '..\\ServiceDispatcher\\Node\\node.exe',
-					'parameters': '""" + installDir + @"fetchMetadata.js""',
+					'parameters': '""" + Path.Combine(installDir, JS_LIBRARY_FOLDER) + @"fetchMetadata.js""',
 					'name': 'TelemetryDashboard-1-Generate-Metadata',
 					'taskType': 1,
 					'enabled': true,
@@ -341,9 +356,9 @@ namespace CustomActions
 		public static ActionResult CopyCertificates(Session session)
 		{
 			string installDir = session.CustomActionData["InstallDir"];
-			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\root.pem", Path.Combine(installDir, "certs\\root.pem"), true);
-			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client.pem", Path.Combine(installDir, "certs\\client.pem"), true);
-			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client_key.pem", Path.Combine(installDir, "certs\\client_key.pem"), true);
+			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\root.pem", Path.Combine(installDir, JS_LIBRARY_FOLDER, "certs\\root.pem"), true);
+			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client.pem", Path.Combine(installDir, JS_LIBRARY_FOLDER, "certs\\client.pem"), true);
+			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client_key.pem", Path.Combine(installDir, JS_LIBRARY_FOLDER, "certs\\client_key.pem"), true);
 
 			return ActionResult.Success;
 		}

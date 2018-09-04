@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
   <Fragment>
-    <CustomAction Id='SetInstallDirectoryForValidation' Property='ValidateInstallDir' Value='InstallDir=[INSTALLFOLDER]' />
     <CustomAction Id='ValidateInstallDir' BinaryKey='CABin' DllEntry='ValidateInstallDir' Impersonate='no' Execute='immediate' Return='check'/>
     <CustomAction Id='IsRepositoryRunningAction' BinaryKey='CABin' DllEntry='IsRepositoryRunning' Impersonate='no' Execute='deferred' Return='check'/>
     <CustomAction Id='RemoveTasksAction' BinaryKey='CABin' DllEntry='RemoveTasks' Impersonate='no' Execute='deferred' Return='check'/>
