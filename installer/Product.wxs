@@ -76,30 +76,31 @@
 
   <Fragment>
     <ComponentGroup Id="MainJSFiles" Directory="JSLIBRARYFOLDER">
-      <Component Id="INSTALLDIR_comp" Guid="3b90a8f3-ebb2-4fa7-b9cb-b5ce9da24a63" Win64="yes" Shared="no">
+      <Component Id="INSTALLDIR_comp" Guid="3b90a8f4-ebb2-4fa7-b9cb-b5ce9da24a63" Win64="yes" Shared="no">
         <CreateFolder />
         <RemoveFile Id="RemoveFilesFromAppDirectory" Name="*.*" On="uninstall" />
+        <RemoveFolder Id="INSTALLDIRREMOVAL" On="uninstall"/>
       </Component>
 
-      <Component Id="fetchMetadata.js_comp" Guid="b0dc5050-5885-493b-ba46-8f173591e1d6" Win64="yes" Shared="no">
+      <Component Id="fetchMetadata.js_comp" Guid="b0dc5051-5885-493b-ba46-8f173591e1d6" Win64="yes" Shared="no">
         <File Source="$(var.ProjectDir)..\fetchMetadata.js" Id="fetchMetadataJS" KeyPath="yes" />
       </Component>
     </ComponentGroup>
     
-    <Component Id="config.js_comp" Guid="19fb555e-896f-427d-913a-7a2fc248f0d3" Win64="yes" Directory="CONFIGFOLDER" Shared="no">
+    <Component Id="config.js_comp" Guid="19fb554e-896f-427d-913a-7a2fc248f0d3" Win64="yes" Directory="CONFIGFOLDER" Shared="no">
       <File Source="$(var.ProjectDir)..\config\config.js" Id="configJS" KeyPath="yes" />
     </Component>
 
     <ComponentGroup Id="CertFiles" Directory="CERTSFOLDER">
-      <Component Id="root.pem_comp" Guid="e5e911a5-8327-48ff-b6dd-7d5bbc0d656b" KeyPath="yes" Shared="no">
+      <Component Id="root.pem_comp" Guid="e5e912a5-8327-48ff-b6dd-7d5bbc0d656b" KeyPath="yes" Shared="no">
         <CopyFile Id="rootPemCopy" SourceProperty="PDLocalCerts" SourceName="root.pem" DestinationProperty="CERTSFOLDER" DestinationName="root.pem" />
         <RemoveFile Id="rootPemRemove" Name="root.pem" On="uninstall" />
       </Component>
-      <Component Id="client.pem_comp" Guid="8725e8e3-43ba-4295-9963-60d93d13b679" KeyPath="yes" Shared="no">
+      <Component Id="client.pem_comp" Guid="8726e8e3-43ba-4295-9963-60d93d13b679" KeyPath="yes" Shared="no">
         <CopyFile Id="clientPemCopy" SourceProperty="PDLocalCerts" SourceName="client.pem" DestinationProperty="CERTSFOLDER" DestinationName="client.pem" />
         <RemoveFile Id="clientPemRemove" Name="client.pem" On="uninstall" />
       </Component>
-      <Component Id="client_key.pem_comp" Guid="29597a2c-5a78-486d-8fed-6e51888d6620" KeyPath="yes" Shared="no">
+      <Component Id="client_key.pem_comp" Guid="29587a2c-5a78-486d-8fed-6e51888d6620" KeyPath="yes" Shared="no">
         <CopyFile Id="clientKeyPemCopy" SourceProperty="PDLocalCerts" SourceName="client_key.pem" DestinationProperty="CERTSFOLDER" DestinationName="client_key.pem" />
         <RemoveFile Id="clientKeyPemRemove" Name="client_key.pem" On="uninstall" />
       </Component>
