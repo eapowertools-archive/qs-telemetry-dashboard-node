@@ -1,6 +1,6 @@
 {
   "name": "telemetry-dashboard-meta-fetcher",
-  "version": "1.0.4",
+  "version": "2.0.0",
   "description": "",
   "main": "fetchMetadata.js",
   "scripts": {
