@@ -1,9 +1,11 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.RegularExpressions;
 using CustomActions.Helpers;
 using Microsoft.Deployment.WindowsInstaller;
 using Newtonsoft.Json;
@@ -129,31 +131,59 @@ namespace CustomActions
 		}
 
 		[CustomAction]
-		public static ActionResult GetInstallDir(Session session)
+		public static ActionResult ValidateInstallDir(Session session)
 		{
-			Tuple<HttpStatusCode, string> response = MakeQrsRequest("/servicecluster/full", HTTPMethod.GET);
-			if (response.Item1 == HttpStatusCode.OK)
+			string installDir = session.CustomActionData["InstallDir"];
+
+			try
 			{
-				string installDirFolder = JArray.Parse((string)JsonConvert.DeserializeObject(response.Item2))[0]["settings"]["sharedPersistenceProperties"]["rootFolder"].ToObject<string>();
-				session["INSTALLFOLDER"] = installDirFolder + "\\" + OUTPUT_FOLDER + JS_LIBRARY_FOLDER;
-				session["CERTSFOLDER"] = installDirFolder + "\\" + OUTPUT_FOLDER + JS_LIBRARY_FOLDER + "\\certs";
-				session["CONFIGFOLDER"] = installDirFolder + "\\" + OUTPUT_FOLDER + JS_LIBRARY_FOLDER + "\\config";
-				return ActionResult.Success;
+				if (!Regex.IsMatch(installDir.Substring(0, 3), "\\\\[a-zA-Z0-9]"))
+				{
+					throw new ArgumentException("Installer path must be a network locattion (start with \"\\\\\").");
+				}
+				if (installDir.EndsWith("\\"))
+				{
+					installDir = installDir.Substring(0, installDir.Length - 1);
+				}
+
+				if (!installDir.EndsWith("\\TelemetryDashboard"))
+				{
+					throw new ArgumentException("Telemetry Dashboard but be installed to \"TelemetryDashboard\" folder on share (installer directory must end with \"\\TelemetryDashboard\").");
+				}
+
+				installDir = installDir.Substring(0, installDir.Length - 18);
+
+				string[] dirs = Directory.GetDirectories(installDir);
+
+				if (!(dirs.Contains("Apps") && dirs.Contains("ArchivedLogs") && dirs.Contains("CustomData") && dirs.Contains("StaticContent")))
+				{
+					throw new ArgumentException("Telemetry Dashboard but be installed to Qlik Sense share folder (\"\\TelemetryDashboard\" folder must exist in root Qlik Sense share, example: \'\\\\QlikServer\\QlikShare\\TelemetryDashboard\\\").");
+
+				}
 			}
-			else
+			catch (ArgumentException e)
 			{
-				session.Message(InstallMessage.Error, new Record() { FormatString = "Cannot get the Qlik Sense share folder. The Telemetry Dashboard can only be installed on a shared persistence installation." });
+				session.Message(InstallMessage.Error, new Record() { FormatString = "The install directory was not valid:\n" + e.Message });
 				return ActionResult.Failure;
 			}
+			catch (Exception e)
+			{
+				session.Message(InstallMessage.Error, new Record() { FormatString = "The install directory validation failed:\n" + e.Message });
+				return ActionResult.Failure;
+			}
+
+			return ActionResult.Success;
 		}
 
 		[CustomAction]
 		public static ActionResult SetOutputDir(Session session)
 		{
 			string installDir = session.CustomActionData["InstallDir"];
+			string outputDir = Path.Combine(installDir, "..\\" + METADATA_OUTPUT + "\\");
+			
 
 			string text = File.ReadAllText(installDir + "\\config\\config.js");
-			text = text.Replace("outputFolderPlaceholder", installDir + "..\\" + METADATA_OUTPUT);
+			text = text.Replace("outputFolderPlaceholder", outputDir);
 			File.WriteAllText(installDir + "\\config\\config.js", text);
 
 			return ActionResult.Success;

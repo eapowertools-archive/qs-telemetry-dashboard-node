@@ -7,6 +7,7 @@
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
+    <Property Id="MSIUSEREALADMINDETECTION" Value="1" />
 
     <Property Id="QRSKEY">
       <RegistrySearch Id="QlikSenseRepsitoryServiceRegistry"
@@ -27,14 +28,17 @@
       <ComponentGroupRef Id="CertFiles"/>
     </Feature>
 
-    <UIRef Id="WixUI_Minimal" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <Property Id="WIXUI_DONTVALIDATEPATH" Value="1" />
+    <UIRef Id="WixUI_InstallDir" />
     <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
     <WixVariable Id="WixUIDialogBmp" Value="dialog.bmp" />
 
     <InstallExecuteSequence>
-      <Custom Action='GetInstallDir' Before='CostInitialize' />
-      <Custom Action='IsRepositoryRunningAction' Before='GetInstallDir' />
-      <Custom Action='RemoveTasksAction' Before='InstallFiles'>REMOVE="ALL"</Custom>
+      <Custom Action='SetInstallDirectoryForValidation' Before='CostInitialize' />
+      <Custom Action='ValidateInstallDir' After='SetInstallDirectoryForValidation' />
+      <Custom Action='IsRepositoryRunningAction' Before='InstallFiles' />
+      <Custom Action='RemoveTasksAction' After='IsRepositoryRunningAction'>REMOVE="ALL"</Custom>
       <Custom Action='SetInstallDirectoryForCertsAction' After='InstallFiles'>NOT Installed</Custom>
       <Custom Action='CopyCertsAction' After='SetInstallDirectoryForCertsAction'>NOT Installed</Custom>
       <Custom Action='ImportAppAction' After='CopyCertsAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
@@ -62,12 +66,10 @@
           </Directory>
         </Directory>
       </Directory>
-      <Directory Id='SHAREDRIVE'>
         <Directory Id="INSTALLFOLDER" Name="TelemetryDashboard" >
           <Directory Id="CERTSFOLDER" Name="certs" />
           <Directory Id="CONFIGFOLDER" Name="config" />
         </Directory>
-      </Directory>
     </Directory>
   </Fragment>
 
