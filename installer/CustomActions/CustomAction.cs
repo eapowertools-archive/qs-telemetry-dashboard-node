@@ -160,10 +160,9 @@ namespace CustomActions
 					dirs[i] = dirs[i].Substring(installDir.Length);
 				}
 
-				if (!(dirs.Contains("Apps") && dirs.Contains("ArchivedLogs") && dirs.Contains("CustomData") && dirs.Contains("StaticContent")))
+				if (!(dirs.Contains("Apps") || dirs.Contains("ArchivedLogs") || dirs.Contains("CustomData") || dirs.Contains("StaticContent")))
 				{
-					throw new ArgumentException("Telemetry Dashboard must but be installed to Qlik Sense share folder (\"\\TelemetryDashboard\" folder must exist in root Qlik Sense share, example: \'\\\\QlikServer\\QlikShare\\TelemetryDashboard\\\").");
-
+					session.Message(InstallMessage.Warning, new Record() { FormatString = "Installer did not find an 'Apps', 'StaticContent', 'ArchivedLogs' or 'StaticContent' folder. Install will proceed but Telemetry Dashboard may not function if not installed in root Qlik Sense share folder." });
 				}
 			}
 			catch (ArgumentException e)

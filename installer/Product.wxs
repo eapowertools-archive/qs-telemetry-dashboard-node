@@ -21,11 +21,12 @@
     </Condition>
 
     <Feature Id="Complete" Title="Telemetry Dashboard" Description="Telemetry Dashboard and Metafetching scripts." Level="1">
+      <ComponentRef Id="fetchMetadata.js_comp"/>
       <ComponentRef Id="config.js_comp"/>
-      <ComponentGroupRef Id="MainJSFiles" />
       <ComponentGroupRef Id="LibComponentGroup"/>
       <ComponentGroupRef Id="NodeModulesComponentGroup"/>
       <ComponentGroupRef Id="CertFiles"/>
+      <ComponentGroupRef Id="MainComponent" />
     </Feature>
 
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
@@ -75,17 +76,16 @@
   </Fragment>
 
   <Fragment>
-    <ComponentGroup Id="MainJSFiles" Directory="JSLIBRARYFOLDER">
-      <Component Id="INSTALLDIR_comp" Guid="3b90a8f4-ebb2-4fa7-b9cb-b5ce9da24a63" Win64="yes" Shared="no">
+    <ComponentGroup Id="MainComponent" Directory="INSTALLFOLDER">
+      <Component Id="INSTALLDIR_comp" Guid="3b91a8f4-ebb2-4fa7-b9cb-b5ce9da24a61" Win64="yes" Shared="no">
         <CreateFolder />
         <RemoveFile Id="RemoveFilesFromAppDirectory" Name="*.*" On="uninstall" />
-        <RemoveFolder Id="INSTALLDIRREMOVAL" On="uninstall"/>
-      </Component>
-
-      <Component Id="fetchMetadata.js_comp" Guid="b0dc5051-5885-493b-ba46-8f173591e1d6" Win64="yes" Shared="no">
-        <File Source="$(var.ProjectDir)..\fetchMetadata.js" Id="fetchMetadataJS" KeyPath="yes" />
       </Component>
     </ComponentGroup>
+
+    <Component Id="fetchMetadata.js_comp" Guid="b0dc5051-5885-493b-ba46-8f173591e1d2" Win64="yes" Directory="JSLIBRARYFOLDER" Shared="no">
+      <File Source="$(var.ProjectDir)..\fetchMetadata.js" Id="fetchMetadataJS" KeyPath="yes" />
+    </Component>
     
     <Component Id="config.js_comp" Guid="19fb554e-896f-427d-913a-7a2fc248f0d3" Win64="yes" Directory="CONFIGFOLDER" Shared="no">
       <File Source="$(var.ProjectDir)..\config\config.js" Id="configJS" KeyPath="yes" />
