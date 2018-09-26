@@ -350,6 +350,75 @@ namespace CustomActions
 		}
 
 		[CustomAction]
+		public static ActionResult CreateDataConnections(Session session)
+		{
+			string installDir = session.CustomActionData["InstallDir"];
+
+			// Add TelemetryMetadata dataconnection
+			Tuple<HttpStatusCode, string> dataConnections = MakeQrsRequest("/dataconnection?filter=name eq 'TelemetryMetadata'", HTTPMethod.GET);
+			if (dataConnections.Item1 != HttpStatusCode.OK)
+			{
+				return ActionResult.Failure;
+			}
+			JArray listOfDataconnections = JArray.Parse((string)JsonConvert.DeserializeObject(dataConnections.Item2));
+			if (listOfDataconnections.Count == 0)
+			{
+				string body = @"
+				{
+					'name': 'TelemetryMetadata',
+					'connectionstring': '" + installDir + METADATA_OUTPUT + @"\\',
+					'type': 'folder',
+					'username': ''
+				}";
+
+
+				Tuple<HttpStatusCode, string> createdConnection = MakeQrsRequest("/dataconnection", HTTPMethod.POST, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
+				if (createdConnection.Item1 != HttpStatusCode.Created)
+				{
+					return ActionResult.Failure;
+				}
+			}
+			else
+			{
+				installDir = installDir.Replace("\\\\", "\\");
+				listOfDataconnections[0]["connectionstring"] = installDir + METADATA_OUTPUT + "\\";
+				listOfDataconnections[0]["modifiedDate"] = DateTime.UtcNow.ToString("s") + "Z";
+				string appId = listOfDataconnections[0]["id"].ToString();
+				Tuple<HttpStatusCode, string> updatedConnection = MakeQrsRequest("/dataconnection/" + appId, HTTPMethod.PUT, HTTPContentType.json, Encoding.UTF8.GetBytes(listOfDataconnections[0].ToString()));
+				if (updatedConnection.Item1 != HttpStatusCode.Created)
+				{
+					return ActionResult.Failure;
+				}
+			}
+
+			// Add EngineSettings dataconnection
+			Tuple<HttpStatusCode, string> engineSettingDataconnection = MakeQrsRequest("/dataconnection?filter=name eq 'EngineSettingsFolder'", HTTPMethod.GET);
+			if (dataConnections.Item1 != HttpStatusCode.OK)
+			{
+				return ActionResult.Failure;
+			}
+			listOfDataconnections = JArray.Parse((string)JsonConvert.DeserializeObject(engineSettingDataconnection.Item2));
+			if (listOfDataconnections.Count == 0)
+			{
+				string body = @"
+				{
+					'name': 'EngineSettingsFolder',
+					'connectionstring': 'C:\\ProgramData\\Qlik\\Sense\\Engine\\',
+					'type': 'folder',
+					'username': ''
+				}";
+
+				Tuple<HttpStatusCode, string> createdConnection = MakeQrsRequest("/dataconnection", HTTPMethod.POST, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
+				if (createdConnection.Item1 != HttpStatusCode.Created)
+				{
+					return ActionResult.Failure;
+				}
+			}
+
+			return ActionResult.Success;
+		}
+
+		[CustomAction]
 		public static ActionResult CopyCertificates(Session session)
 		{
 			string installDir = session.CustomActionData["InstallDir"];
