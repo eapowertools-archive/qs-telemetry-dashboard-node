@@ -105,10 +105,12 @@
     <String Id="InstallDirDlgChange" Overridable="yes"><!-- _locID_text="InstallDirDlgChange" _locComment="InstallDirDlgChange" -->&amp;Change...</String>
     <String Id="InstallDirDlgTitle" Overridable="yes"><!-- _locID_text="InstallDirDlgTitle" _locComment="InstallDirDlgTitle" -->{\WixUI_Font_Title}Destination Folder</String>
     <!--<String Id="InstallDirDlgDescription" Overridable="yes">--><!-- _locID_text="InstallDirDlgDescription" _locComment="InstallDirDlgDescription" --><!--Click Next to install to the default folder or click Change to choose another.</String>-->
-  <String Id="InstallDirDlgDescription" Overridable="yes">You MUST enter in your share folder network location, and the path MUST end with 'TelemetryDashboard'. Example: "\\qlikserver\QlikSenseShare\TelemetryDashboard".</String>
+  <String Id="InstallDirDlgDescription" Overridable="yes">You MUST enter in your share folder network location.</String>
 
   <String Id="InstallDirDlgBannerBitmap" Overridable="yes"><!-- _locID_text="InstallDirDlgBannerBitmap" _locComment="InstallDirDlgBannerBitmap" -->WixUI_Bmp_Banner</String>
-    <String Id="InstallDirDlgFolderLabel" Overridable="yes"><!-- _locID_text="InstallDirDlgFolderLabel" _locComment="InstallDirDlgFolderLabel" -->Install [ProductName] to share drive:</String>
+    <String Id="InstallDirDlgFolderLabel" Overridable="yes"><!-- _locID_text="InstallDirDlgFolderLabel" _locComment="InstallDirDlgFolderLabel" -->Install [ProductName] to share drive:
+Share drive path MUST end with 'TelemetryDashboard'.
+Example: "\\qlikserver\QlikSenseShare\TelemetryDashboard"</String>
 
     <String Id="InstallScopeDlg_Title" Overridable="yes"><!-- _locID_text="InstallScopeDlg_Title" _locComment="InstallScopeDlg_Title" -->[ProductName] Setup</String>
     <String Id="InstallScopeDlgBannerBitmap" Overridable="yes"><!-- _locID_text="InstallScopeDlgBannerBitmap" _locComment="InstallScopeDlgBannerBitmap" -->WixUI_Bmp_Banner</String>
