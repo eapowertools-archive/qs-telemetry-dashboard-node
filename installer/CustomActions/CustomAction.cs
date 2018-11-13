@@ -29,7 +29,7 @@ namespace CustomActions
 
 	public class CustomActions
 	{
-		private static Lazy<X509Certificate2> SENSE_CERT = new Lazy<X509Certificate2>(() => GetCertificate());
+		private static Lazy<X509Certificate2> SENSE_CERT = new Lazy<X509Certificate2>(SetTLSandGetCertificate);
 		private static string OUTPUT_FOLDER = "TelemetryDashboard";
 		private static string JS_LIBRARY_FOLDER = "MetadataGenerater";
 		private static string METADATA_OUTPUT = "MetadataOutput";
@@ -455,8 +455,9 @@ namespace CustomActions
 			return ActionResult.Success;
 		}
 
-		private static X509Certificate2 GetCertificate()
+		private static X509Certificate2 SetTLSandGetCertificate()
 		{
+			ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 			var clientPem = File.ReadAllText(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client.pem");
 			var clientKeyPem = File.ReadAllText(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client_key.pem");
 			byte[] certBuffer = HelperFunctions.GetBytesFromPEM(clientPem, Helpers.PemStringType.Certificate);

@@ -108,8 +108,7 @@
   <String Id="InstallDirDlgDescription" Overridable="yes">You MUST enter in your share folder network location.</String>
 
   <String Id="InstallDirDlgBannerBitmap" Overridable="yes"><!-- _locID_text="InstallDirDlgBannerBitmap" _locComment="InstallDirDlgBannerBitmap" -->WixUI_Bmp_Banner</String>
-    <String Id="InstallDirDlgFolderLabel" Overridable="yes"><!-- _locID_text="InstallDirDlgFolderLabel" _locComment="InstallDirDlgFolderLabel" -->Install [ProductName] to share drive:
-Share drive path MUST end with 'TelemetryDashboard'.
+    <String Id="InstallDirDlgFolderLabel" Overridable="yes"><!-- _locID_text="InstallDirDlgFolderLabel" _locComment="InstallDirDlgFolderLabel" -->Install [ProductName] to the share path used in the Qlik Sense deployment. The path MUST end with 'TelemetryDashboard'.
 Example: "\\qlikserver\QlikSenseShare\TelemetryDashboard"</String>
 
     <String Id="InstallScopeDlg_Title" Overridable="yes"><!-- _locID_text="InstallScopeDlg_Title" _locComment="InstallScopeDlg_Title" -->[ProductName] Setup</String>
