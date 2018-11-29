@@ -65,6 +65,9 @@
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WixUI_en-us.wxl" />
+  </ItemGroup>
   <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
   <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
@@ -77,11 +80,11 @@
     <Error Condition="!Exists('packages\WiX.3.11.1\build\wix.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\WiX.3.11.1\build\wix.props'))" />
   </Target>
   <PropertyGroup>
-    <PreBuildEvent>"%25WIX%25\bin\heat.exe" dir "$(ProjectDir)\..\node_modules" -dr INSTALLFOLDER -gg -sfrag -template fragment -cg NodeModulesComponentGroup -var var.NodeModulesPath -out NodeModuleDirectory.wxs
-"%25WIX%25\bin\heat.exe" dir "$(ProjectDir)\..\lib" -dr INSTALLFOLDER -gg -sfrag -template fragment -cg LibComponentGroup -var var.LibPath -out LibDirectory.wxs</PreBuildEvent>
+    <PostBuildEvent />
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent />
+    <PreBuildEvent>"%25WIX%25\bin\heat.exe" dir "$(ProjectDir)\..\node_modules" -dr JSLIBRARYFOLDER -gg -sfrag -template fragment -cg NodeModulesComponentGroup -var var.NodeModulesPath -out NodeModuleDirectory.wxs
+"%25WIX%25\bin\heat.exe" dir "$(ProjectDir)\..\lib" -dr JSLIBRARYFOLDER -gg -sfrag -template fragment -cg LibComponentGroup -var var.LibPath -out LibDirectory.wxs</PreBuildEvent>
   </PropertyGroup>
   <!--
   To modify your build process, add your task inside one of the targets below and uncomment it.

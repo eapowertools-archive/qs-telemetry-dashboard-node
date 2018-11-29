@@ -1,9 +1,11 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.RegularExpressions;
 using CustomActions.Helpers;
 using Microsoft.Deployment.WindowsInstaller;
 using Newtonsoft.Json;
@@ -27,7 +29,10 @@ namespace CustomActions
 
 	public class CustomActions
 	{
-		private static X509Certificate2 SENSE_CERT = GetCertificate();
+		private static Lazy<X509Certificate2> SENSE_CERT = new Lazy<X509Certificate2>(SetTLSandGetCertificate);
+		private static string OUTPUT_FOLDER = "TelemetryDashboard";
+		private static string JS_LIBRARY_FOLDER = "MetadataGenerater";
+		private static string METADATA_OUTPUT = "MetadataOutput";
 
 		private static Tuple<HttpStatusCode, string> MakeQrsRequest(string path, HTTPMethod method, HTTPContentType contentType = HTTPContentType.json, byte[] body = null)
 		{
@@ -63,7 +68,7 @@ namespace CustomActions
 			request.Headers.Add("X-Qlik-xrfkey", xrfkey);
 			request.Headers.Add("X-Qlik-User", @"UserDirectory=internal;UserId=sa_api");
 			// Add the certificate to the request and provide the user to execute as
-			request.ClientCertificates.Add(SENSE_CERT);
+			request.ClientCertificates.Add(SENSE_CERT.Value);
 
 			if (method == HTTPMethod.POST || method == HTTPMethod.PUT)
 			{
@@ -125,6 +130,72 @@ namespace CustomActions
 			return new Tuple<HttpStatusCode, string>(responseCode, responseString);
 		}
 
+		[CustomAction]
+		public static ActionResult ValidateInstallDir(Session session)
+		{
+			string installDir = session["INSTALLFOLDER"];
+
+			if (!installDir.EndsWith("\\"))
+			{
+				installDir += "\\";
+			}
+
+			try
+			{
+				if (!Regex.IsMatch(installDir.Substring(0, 3), "\\\\[a-zA-Z0-9]"))
+				{
+					throw new ArgumentException("Installer path must be a network locattion (start with \"\\\\\").");
+				}
+
+				if (!installDir.EndsWith("\\" + OUTPUT_FOLDER + "\\"))
+				{
+					throw new ArgumentException("Telemetry Dashboard but be installed to \"" + OUTPUT_FOLDER + "\" folder on share (installer directory must end with \"\\" + OUTPUT_FOLDER + "\").");
+				}
+
+				installDir = installDir.Substring(0, installDir.Length - (OUTPUT_FOLDER.Length + 1));
+
+				string[] dirs = Directory.GetDirectories(installDir);
+				for (int i = 0; i < dirs.Length; i++)
+				{
+					dirs[i] = dirs[i].Substring(installDir.Length);
+				}
+
+				if (!(dirs.Contains("Apps") || dirs.Contains("ArchivedLogs") || dirs.Contains("CustomData") || dirs.Contains("StaticContent")))
+				{
+					session.Message(InstallMessage.Warning, new Record() { FormatString = "Installer did not find an 'Apps', 'StaticContent', 'ArchivedLogs' or 'StaticContent' folder. Install will proceed but Telemetry Dashboard may not function if not installed in root Qlik Sense share folder." });
+				}
+			}
+			catch (ArgumentException e)
+			{
+				session.Message(InstallMessage.Error, new Record() { FormatString = "The install directory was not valid:\n" + e.Message });
+				return ActionResult.Failure;
+			}
+			catch (Exception e)
+			{
+				session.Message(InstallMessage.Error, new Record() { FormatString = "The install directory validation failed:\n" + e.Message });
+				return ActionResult.Failure;
+			}
+
+			return ActionResult.Success;
+		}
+
+		[CustomAction]
+		public static ActionResult SetOutputDir(Session session)
+		{
+			string installDir = session.CustomActionData["InstallDir"];
+			string outputDir = Path.Combine(installDir, METADATA_OUTPUT);
+
+			outputDir = outputDir.Replace('\\', '/');
+			if (!outputDir.EndsWith("/"))
+			{
+				outputDir += '/';
+			}
+			string text = File.ReadAllText(installDir + JS_LIBRARY_FOLDER + "\\config\\config.js");
+			text = text.Replace("outputFolderPlaceholder", outputDir);
+			File.WriteAllText(installDir + JS_LIBRARY_FOLDER + "\\config\\config.js", text);
+
+			return ActionResult.Success;
+		}
 
 		[CustomAction]
 		public static ActionResult IsRepositoryRunning(Session session)
@@ -164,6 +235,10 @@ namespace CustomActions
 		public static ActionResult CreateTasks(Session session)
 		{
 			string installDir = session.CustomActionData["InstallDir"];
+			if (!installDir.EndsWith("\\"))
+			{
+				installDir += "\\";
+			}
 
 			string externalTaskID = "";
 			// External Task
@@ -178,7 +253,7 @@ namespace CustomActions
 				string body = @"
 				{
 					'path': '..\\ServiceDispatcher\\Node\\node.exe',
-					'parameters': '""" + installDir + @"fetchMetadata.js""',
+					'parameters': '""" + Path.Combine(installDir, JS_LIBRARY_FOLDER) + @"\\fetchMetadata.js""',
 					'name': 'TelemetryDashboard-1-Generate-Metadata',
 					'taskType': 1,
 					'enabled': true,
@@ -275,12 +350,81 @@ namespace CustomActions
 		}
 
 		[CustomAction]
+		public static ActionResult CreateDataConnections(Session session)
+		{
+			string installDir = session.CustomActionData["InstallDir"];
+
+			// Add TelemetryMetadata dataconnection
+			Tuple<HttpStatusCode, string> dataConnections = MakeQrsRequest("/dataconnection?filter=name eq 'TelemetryMetadata'", HTTPMethod.GET);
+			if (dataConnections.Item1 != HttpStatusCode.OK)
+			{
+				return ActionResult.Failure;
+			}
+			JArray listOfDataconnections = JArray.Parse((string)JsonConvert.DeserializeObject(dataConnections.Item2));
+			if (listOfDataconnections.Count == 0)
+			{
+				string body = @"
+				{
+					'name': 'TelemetryMetadata',
+					'connectionstring': '" + installDir + METADATA_OUTPUT + @"\\',
+					'type': 'folder',
+					'username': ''
+				}";
+
+
+				Tuple<HttpStatusCode, string> createdConnection = MakeQrsRequest("/dataconnection", HTTPMethod.POST, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
+				if (createdConnection.Item1 != HttpStatusCode.Created)
+				{
+					return ActionResult.Failure;
+				}
+			}
+			else
+			{
+				installDir = installDir.Replace("\\\\", "\\");
+				listOfDataconnections[0]["connectionstring"] = installDir + METADATA_OUTPUT + "\\";
+				listOfDataconnections[0]["modifiedDate"] = DateTime.UtcNow.ToString("s") + "Z";
+				string appId = listOfDataconnections[0]["id"].ToString();
+				Tuple<HttpStatusCode, string> updatedConnection = MakeQrsRequest("/dataconnection/" + appId, HTTPMethod.PUT, HTTPContentType.json, Encoding.UTF8.GetBytes(listOfDataconnections[0].ToString()));
+				if (updatedConnection.Item1 != HttpStatusCode.Created)
+				{
+					return ActionResult.Failure;
+				}
+			}
+
+			// Add EngineSettings dataconnection
+			Tuple<HttpStatusCode, string> engineSettingDataconnection = MakeQrsRequest("/dataconnection?filter=name eq 'EngineSettingsFolder'", HTTPMethod.GET);
+			if (dataConnections.Item1 != HttpStatusCode.OK)
+			{
+				return ActionResult.Failure;
+			}
+			listOfDataconnections = JArray.Parse((string)JsonConvert.DeserializeObject(engineSettingDataconnection.Item2));
+			if (listOfDataconnections.Count == 0)
+			{
+				string body = @"
+				{
+					'name': 'EngineSettingsFolder',
+					'connectionstring': 'C:\\ProgramData\\Qlik\\Sense\\Engine\\',
+					'type': 'folder',
+					'username': ''
+				}";
+
+				Tuple<HttpStatusCode, string> createdConnection = MakeQrsRequest("/dataconnection", HTTPMethod.POST, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
+				if (createdConnection.Item1 != HttpStatusCode.Created)
+				{
+					return ActionResult.Failure;
+				}
+			}
+
+			return ActionResult.Success;
+		}
+
+		[CustomAction]
 		public static ActionResult CopyCertificates(Session session)
 		{
 			string installDir = session.CustomActionData["InstallDir"];
-			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\root.pem", Path.Combine(installDir, "certs\\root.pem"), true);
-			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client.pem", Path.Combine(installDir, "certs\\client.pem"), true);
-			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client_key.pem", Path.Combine(installDir, "certs\\client_key.pem"), true);
+			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\root.pem", Path.Combine(installDir, JS_LIBRARY_FOLDER, "certs\\root.pem"), true);
+			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client.pem", Path.Combine(installDir, JS_LIBRARY_FOLDER, "certs\\client.pem"), true);
+			File.Copy(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client_key.pem", Path.Combine(installDir, JS_LIBRARY_FOLDER, "certs\\client_key.pem"), true);
 
 			return ActionResult.Success;
 		}
@@ -311,8 +455,9 @@ namespace CustomActions
 			return ActionResult.Success;
 		}
 
-		private static X509Certificate2 GetCertificate()
+		private static X509Certificate2 SetTLSandGetCertificate()
 		{
+			ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 			var clientPem = File.ReadAllText(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client.pem");
 			var clientKeyPem = File.ReadAllText(@"C:\ProgramData\Qlik\Sense\Repository\Exported Certificates\.Local Certificates\client_key.pem");
 			byte[] certBuffer = HelperFunctions.GetBytesFromPEM(clientPem, Helpers.PemStringType.Certificate);

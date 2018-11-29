@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" Name="TelemetryDashboard" Language="1033" Version="1.0.4.0" Manufacturer="EA Americas"
+  <Product Id="*" Name="TelemetryDashboard" Language="1033" Version="2.0.0.0" Manufacturer="EA Americas"
            UpgradeCode="6827879d-8349-4430-b2cb-02e094803c2e" Codepage="1252">
     <Package Platform="x64" InstallerVersion="200" Compressed="yes" InstallPrivileges="elevated" InstallScope="perMachine" SummaryCodepage="1252" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
+    <Property Id="MSIUSEREALADMINDETECTION" Value="1" />
 
     <Property Id="QRSKEY">
       <RegistrySearch Id="QlikSenseRepsitoryServiceRegistry"
@@ -19,31 +20,38 @@
       <![CDATA[Installed OR QRSKEY]]>
     </Condition>
 
-    <Feature Id="Complete" Title="Telemetry Dashboard" Description="Telemetry Dashboard and Metafetching scripts." ConfigurableDirectory="INSTALLFOLDER" Level="1">
+    <Feature Id="Complete" Title="Telemetry Dashboard" Description="Telemetry Dashboard and Metafetching scripts." Level="1">
+      <ComponentRef Id="fetchMetadata.js_comp"/>
       <ComponentRef Id="config.js_comp"/>
-      <ComponentGroupRef Id="MainJSFiles" />
       <ComponentGroupRef Id="LibComponentGroup"/>
       <ComponentGroupRef Id="NodeModulesComponentGroup"/>
       <ComponentGroupRef Id="CertFiles"/>
+      <ComponentGroupRef Id="MainComponent" />
     </Feature>
 
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <Property Id="WIXUI_DONTVALIDATEPATH" Value="1" />
     <UIRef Id="WixUI_InstallDir" />
     <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
     <WixVariable Id="WixUIDialogBmp" Value="dialog.bmp" />
 
     <InstallExecuteSequence>
+      <Custom Action='ValidateInstallDir' Before='CostInitialize'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action='IsRepositoryRunningAction' Before='InstallFiles' />
-      <Custom Action='ImportAppAction' After='IsRepositoryRunningAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
-      <Custom Action='RemoveTasksAction' Before='InstallFiles'>REMOVE="ALL"</Custom>
-      <Custom Action='SetInstallDirectoryForCreateAction' After='InstallFiles'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
-      <Custom Action='CreateTasksAction' After='SetInstallDirectoryForCreateAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
-      <Custom Action='SetInstallDirectoryForCertsAction' After='CreateTasksAction'>NOT Installed</Custom>
+      <Custom Action='RemoveTasksAction' After='IsRepositoryRunningAction'>REMOVE="ALL"</Custom>
+      <Custom Action='SetInstallDirectoryForCertsAction' After='InstallFiles'>NOT Installed</Custom>
       <Custom Action='CopyCertsAction' After='SetInstallDirectoryForCertsAction'>NOT Installed</Custom>
+      <Custom Action='ImportAppAction' After='CopyCertsAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='SetInstallDirectoryForTasksAction' After='ImportAppAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='CreateTasksAction' After='SetInstallDirectoryForTasksAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='SetDirectoryForSetOutputDirAction' After='CreateTasksAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='SetOutputDirAction' After='SetDirectoryForSetOutputDirAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+
     </InstallExecuteSequence>
   </Product>
 
   <Fragment>
+
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="CommonAppDataFolder">
         <Directory Id="PDQlik" Name="Qlik">
@@ -58,47 +66,41 @@
           </Directory>
         </Directory>
       </Directory>
-      <Directory Id="ProgramFiles64Folder">
-        <Directory Id="Qlik" Name="Qlik">
-          <Directory Id="Sense" Name="Sense">
-            <Directory Id="EAPowerTools" Name="EAPowerTools">
-              <Directory Id="INSTALLFOLDER" Name="TelemetryDashboard" >
-                <Directory Id="CERTSFOLDER" Name="certs" />
-                <Directory Id="CONFIGFOLDER" Name="config" />
-              </Directory>
-            </Directory>
+        <Directory Id="INSTALLFOLDER" Name="TelemetryDashboard" >
+          <Directory Id="JSLIBRARYFOLDER" Name="MetadataGenerater" >
+            <Directory Id="CERTSFOLDER" Name="certs" />
+            <Directory Id="CONFIGFOLDER" Name="config" />
           </Directory>
         </Directory>
-      </Directory>
     </Directory>
   </Fragment>
 
   <Fragment>
-    <ComponentGroup Id="MainJSFiles" Directory="INSTALLFOLDER">
-      <Component Id="INSTALLDIR_comp" Guid="3b90a8f3-ebb2-4fa7-b9cb-b5ce9da24a63" Win64="yes">
+    <ComponentGroup Id="MainComponent" Directory="INSTALLFOLDER">
+      <Component Id="INSTALLDIR_comp" Guid="3b91a8f4-ebb2-4fa7-b9cb-b5ce9da24a61" Win64="yes" Shared="no">
         <CreateFolder />
         <RemoveFile Id="RemoveFilesFromAppDirectory" Name="*.*" On="uninstall" />
       </Component>
-
-      <Component Id="fetchMetadata.js_comp" Guid="b0dc5050-5885-493b-ba46-8f173591e1d6" Win64="yes">
-        <File Source="$(var.ProjectDir)..\fetchMetadata.js" Id="fetchMetadataJS" KeyPath="yes" />
-      </Component>
     </ComponentGroup>
+
+    <Component Id="fetchMetadata.js_comp" Guid="b0dc5051-5885-493b-ba46-8f173591e1d2" Win64="yes" Directory="JSLIBRARYFOLDER" Shared="no">
+      <File Source="$(var.ProjectDir)..\fetchMetadata.js" Id="fetchMetadataJS" KeyPath="yes" />
+    </Component>
     
-    <Component Id="config.js_comp" Guid="19fb555e-896f-427d-913a-7a2fc248f0d3" Win64="yes" Directory="CONFIGFOLDER">
+    <Component Id="config.js_comp" Guid="19fb554e-896f-427d-913a-7a2fc248f0d3" Win64="yes" Directory="CONFIGFOLDER" Shared="no">
       <File Source="$(var.ProjectDir)..\config\config.js" Id="configJS" KeyPath="yes" />
     </Component>
 
     <ComponentGroup Id="CertFiles" Directory="CERTSFOLDER">
-      <Component Id="root.pem_comp" Guid="e5e911a5-8327-48ff-b6dd-7d5bbc0d656b" KeyPath="yes">
+      <Component Id="root.pem_comp" Guid="e5e912a5-8327-48ff-b6dd-7d5bbc0d656b" KeyPath="yes" Shared="no">
         <CopyFile Id="rootPemCopy" SourceProperty="PDLocalCerts" SourceName="root.pem" DestinationProperty="CERTSFOLDER" DestinationName="root.pem" />
         <RemoveFile Id="rootPemRemove" Name="root.pem" On="uninstall" />
       </Component>
-      <Component Id="client.pem_comp" Guid="8725e8e3-43ba-4295-9963-60d93d13b679" KeyPath="yes">
+      <Component Id="client.pem_comp" Guid="8726e8e3-43ba-4295-9963-60d93d13b679" KeyPath="yes" Shared="no">
         <CopyFile Id="clientPemCopy" SourceProperty="PDLocalCerts" SourceName="client.pem" DestinationProperty="CERTSFOLDER" DestinationName="client.pem" />
         <RemoveFile Id="clientPemRemove" Name="client.pem" On="uninstall" />
       </Component>
-      <Component Id="client_key.pem_comp" Guid="29597a2c-5a78-486d-8fed-6e51888d6620" KeyPath="yes">
+      <Component Id="client_key.pem_comp" Guid="29587a2c-5a78-486d-8fed-6e51888d6620" KeyPath="yes" Shared="no">
         <CopyFile Id="clientKeyPemCopy" SourceProperty="PDLocalCerts" SourceName="client_key.pem" DestinationProperty="CERTSFOLDER" DestinationName="client_key.pem" />
         <RemoveFile Id="clientKeyPemRemove" Name="client_key.pem" On="uninstall" />
       </Component>

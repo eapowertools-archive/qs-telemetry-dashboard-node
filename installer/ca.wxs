@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
   <Fragment>
+    <CustomAction Id='ValidateInstallDir' BinaryKey='CABin' DllEntry='ValidateInstallDir' Execute='immediate' Return='check'/>
     <CustomAction Id='IsRepositoryRunningAction' BinaryKey='CABin' DllEntry='IsRepositoryRunning' Impersonate='no' Execute='deferred' Return='check'/>
     <CustomAction Id='RemoveTasksAction' BinaryKey='CABin' DllEntry='RemoveTasks' Impersonate='no' Execute='deferred' Return='check'/>
     <CustomAction Id='ImportAppAction' BinaryKey='CABin' DllEntry='ImportApp' Impersonate='no' Execute='deferred' Return='check'/>
-    <CustomAction Id='SetInstallDirectoryForCreateAction' Property='CreateTasksAction' Value='InstallDir=[INSTALLFOLDER]' />
+    <CustomAction Id='SetInstallDirectoryForTasksAction' Property='CreateTasksAction' Value='InstallDir=[INSTALLFOLDER]' />
     <CustomAction Id='CreateTasksAction' BinaryKey='CABin' DllEntry='CreateTasks' Impersonate='no' Execute='deferred' Return='check'/>
     <CustomAction Id='SetInstallDirectoryForCertsAction' Property='CopyCertsAction' Value='InstallDir=[INSTALLFOLDER]' />
     <CustomAction Id='CopyCertsAction' BinaryKey='CABin' DllEntry='CopyCertificates' Impersonate='no' Execute='deferred' Return='check'/>
+    <CustomAction Id='SetDirectoryForSetOutputDirAction' Property='SetOutputDirAction' Value='InstallDir=[INSTALLFOLDER]' />
+    <CustomAction Id='SetOutputDirAction' BinaryKey='CABin' DllEntry='SetOutputDir' Impersonate='no' Execute='deferred' Return='check'/>
 
     <Binary Id='CABin' SourceFile='./CustomActions/bin/x64/$(var.Configuration)/CustomActions.CA.dll'/>
 	</Fragment>
