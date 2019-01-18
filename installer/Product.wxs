@@ -42,7 +42,9 @@
       <Custom Action='SetInstallDirectoryForCertsAction' After='InstallFiles'>NOT Installed</Custom>
       <Custom Action='CopyCertsAction' After='SetInstallDirectoryForCertsAction'>NOT Installed</Custom>
       <Custom Action='ImportAppAction' After='CopyCertsAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
-      <Custom Action='SetInstallDirectoryForTasksAction' After='ImportAppAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='SetInstallDirectoryForDataConnectionsAction' After='ImportAppAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='CreateDataConnectionsAction' After='SetInstallDirectoryForDataConnectionsAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='SetInstallDirectoryForTasksAction' After='CreateDataConnectionsAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action='CreateTasksAction' After='SetInstallDirectoryForTasksAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action='SetDirectoryForSetOutputDirAction' After='CreateTasksAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action='SetOutputDirAction' After='SetDirectoryForSetOutputDirAction'>(NOT Installed) OR (REINSTALL) OR (UPGRADINGPRODUCTCODE)</Custom>

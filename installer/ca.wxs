@@ -5,6 +5,8 @@
     <CustomAction Id='IsRepositoryRunningAction' BinaryKey='CABin' DllEntry='IsRepositoryRunning' Impersonate='yes' Execute='deferred' Return='check'/>
     <CustomAction Id='RemoveTasksAction' BinaryKey='CABin' DllEntry='RemoveTasks' Impersonate='yes' Execute='deferred' Return='check'/>
     <CustomAction Id='ImportAppAction' BinaryKey='CABin' DllEntry='ImportApp' Impersonate='yes' Execute='deferred' Return='check'/>
+    <CustomAction Id='SetInstallDirectoryForDataConnectionsAction' Property='CreateDataConnectionsAction' Value='InstallDir=[INSTALLFOLDER]' />
+    <CustomAction Id='CreateDataConnectionsAction' BinaryKey='CABin' DllEntry='CreateDataConnectionsAction' Impersonate='yes' Execute='deferred' Return='check'/>
     <CustomAction Id='SetInstallDirectoryForTasksAction' Property='CreateTasksAction' Value='InstallDir=[INSTALLFOLDER]' />
     <CustomAction Id='CreateTasksAction' BinaryKey='CABin' DllEntry='CreateTasks' Impersonate='yes' Execute='deferred' Return='check'/>
     <CustomAction Id='SetInstallDirectoryForCertsAction' Property='CopyCertsAction' Value='InstallDir=[INSTALLFOLDER]' />
