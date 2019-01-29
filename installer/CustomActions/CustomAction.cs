@@ -374,7 +374,7 @@ namespace CustomActions
 
 
 				Tuple<HttpStatusCode, string> createdConnection = MakeQrsRequest("/dataconnection", HTTPMethod.POST, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
-				if (createdConnection.Item1 != HttpStatusCode.OK)
+				if (createdConnection.Item1 != HttpStatusCode.Created)
 				{
 					return ActionResult.Failure;
 				}
@@ -386,7 +386,7 @@ namespace CustomActions
 				listOfDataconnections[0]["modifiedDate"] = DateTime.UtcNow.ToString("s") + "Z";
 				string appId = listOfDataconnections[0]["id"].ToString();
 				Tuple<HttpStatusCode, string> updatedConnection = MakeQrsRequest("/dataconnection/" + appId, HTTPMethod.PUT, HTTPContentType.json, Encoding.UTF8.GetBytes(listOfDataconnections[0].ToString()));
-				if (updatedConnection.Item1 != HttpStatusCode.Created)
+				if (updatedConnection.Item1 != HttpStatusCode.OK)
 				{
 					return ActionResult.Failure;
 				}
