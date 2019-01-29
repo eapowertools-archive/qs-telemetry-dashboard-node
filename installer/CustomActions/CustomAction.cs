@@ -353,6 +353,7 @@ namespace CustomActions
 		public static ActionResult CreateDataConnections(Session session)
 		{
 			string installDir = session.CustomActionData["InstallDir"];
+			installDir = installDir.Replace("\\", "\\\\");
 
 			// Add TelemetryMetadata dataconnection
 			Tuple<HttpStatusCode, string> dataConnections = MakeQrsRequest("/dataconnection?filter=name eq 'TelemetryMetadata'", HTTPMethod.GET);
@@ -385,7 +386,7 @@ namespace CustomActions
 				listOfDataconnections[0]["modifiedDate"] = DateTime.UtcNow.ToString("s") + "Z";
 				string appId = listOfDataconnections[0]["id"].ToString();
 				Tuple<HttpStatusCode, string> updatedConnection = MakeQrsRequest("/dataconnection/" + appId, HTTPMethod.PUT, HTTPContentType.json, Encoding.UTF8.GetBytes(listOfDataconnections[0].ToString()));
-				if (updatedConnection.Item1 != HttpStatusCode.Created)
+				if (updatedConnection.Item1 != HttpStatusCode.OK)
 				{
 					return ActionResult.Failure;
 				}
