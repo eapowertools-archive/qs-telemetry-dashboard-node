@@ -25,10 +25,6 @@ var config = {
         entityCustomPropertyMap_table: "entity_customProperty.csv",
         logLevel_table: "logLevels.csv",
         systemInfo_table: "systemInfo.csv"
-        // variables_table: "variables.csv",
-        // masterMetrics_table: "masterMetrics.csv",
-        // visualizationsMasterMetrics_table: "visualizations_masterMetrics.csv",
-        // nonMasterMetrics_table: "nonMasterMetrics.csv",
     }
 };
 
