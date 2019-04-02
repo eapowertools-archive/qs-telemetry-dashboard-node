@@ -215,20 +215,42 @@ namespace CustomActions
 		[CustomAction]
 		public static ActionResult ImportApp(Session session)
 		{
-			Tuple<HttpStatusCode, string> hasAppResponse = MakeQrsRequest("/app/count?filter=name eq 'Telemetry Dashboard'", HTTPMethod.GET);
-			if (hasAppResponse.Item1 != HttpStatusCode.OK)
+			Tuple<HttpStatusCode, string> apps = MakeQrsRequest("/app?filter=name eq 'Telemetry Dashboard'", HTTPMethod.GET);
+			if (apps.Item1 != HttpStatusCode.OK)
 			{
 				return ActionResult.Failure;
 			}
 
-			if (JObject.Parse((string)JsonConvert.DeserializeObject(hasAppResponse.Item2))["value"].ToObject<int>() == 1)
+			JArray listOfApps = JArray.Parse((string)JsonConvert.DeserializeObject(apps.Item2));
+
+			if (listOfApps.Count == 1)
 			{
-				return ActionResult.NotExecuted;
+				string appID = listOfApps[0]["id"].ToString();
+				Tuple<HttpStatusCode, string> replaceAppResponse = MakeQrsRequest("/app/upload/replace?targetappid=" + appID, HTTPMethod.POST, HTTPContentType.app, Properties.Resources.Telemetry_Dashboard);
+				if (replaceAppResponse.Item1 == HttpStatusCode.OK)
+				{
+					return ActionResult.Success;
+				}
 			}
 
-			// import app
-			MakeQrsRequest("/app/upload?name=Telemetry Dashboard", HTTPMethod.POST, HTTPContentType.app, Properties.Resources.Telemetry_Dashboard);
-			return ActionResult.Success;
+			else {
+				if (listOfApps.Count > 1)
+				{
+					// rename all existing apps
+
+					for (int i = 0; i < listOfApps.Count; i++)
+					{
+						
+					}
+				}
+			
+				Tuple<HttpStatusCode, string> uploadAppResponse = MakeQrsRequest("/app/upload?name=Telemetry Dashboard", HTTPMethod.POST, HTTPContentType.app, Properties.Resources.Telemetry_Dashboard);
+				if (uploadAppResponse.Item1 == HttpStatusCode.Created)
+				{
+					return ActionResult.Success;
+				}
+			}
+			return ActionResult.Failure;
 		}
 
 		[CustomAction]
