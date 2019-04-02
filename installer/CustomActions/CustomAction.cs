@@ -134,6 +134,7 @@ namespace CustomActions
 		public static ActionResult ValidateInstallDir(Session session)
 		{
 			string installDir = session["INSTALLFOLDER"];
+			session.Log("Install directory to validate: " + installDir);
 
 			if (!installDir.EndsWith("\\"))
 			{
