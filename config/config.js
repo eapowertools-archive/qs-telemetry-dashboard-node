@@ -20,7 +20,6 @@ var config = {
         sheets_table: "sheets.csv",
         users_table: "users.csv",
         visualizations_table: "visualizations.csv",
-        metrics_table: "metrics.csv",
         customPropertyDefinitions_table: "customPropertyDefinitions.csv",
         entityCustomPropertyMap_table: "entity_customProperty.csv",
         logLevel_table: "logLevels.csv",
