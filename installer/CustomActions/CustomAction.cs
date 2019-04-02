@@ -243,7 +243,7 @@ namespace CustomActions
 						listOfApps[i]["modifiedDate"] = DateTime.UtcNow.ToString("s") + "Z";
 						string appId = listOfApps[i]["id"].ToString();
 						Tuple<HttpStatusCode, string> updatedApp = MakeQrsRequest("/app/" + appId, HTTPMethod.PUT, HTTPContentType.json, Encoding.UTF8.GetBytes(listOfApps[i].ToString()));
-						if (updatedApp.Item1 != HttpStatusCode.OK)
+						if (updatedApp.Item1 != HttpStatusCode.Created)
 						{
 							return ActionResult.Failure;
 						}
