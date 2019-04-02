@@ -215,7 +215,7 @@ namespace CustomActions
 		[CustomAction]
 		public static ActionResult ImportApp(Session session)
 		{
-			Tuple<HttpStatusCode, string> apps = MakeQrsRequest("/app?filter=name eq 'Telemetry Dashboard'", HTTPMethod.GET);
+			Tuple<HttpStatusCode, string> apps = MakeQrsRequest("/app/full?filter=name eq 'Telemetry Dashboard'", HTTPMethod.GET);
 			if (apps.Item1 != HttpStatusCode.OK)
 			{
 				return ActionResult.Failure;
@@ -236,11 +236,16 @@ namespace CustomActions
 			else {
 				if (listOfApps.Count > 1)
 				{
-					// rename all existing apps
-
 					for (int i = 0; i < listOfApps.Count; i++)
 					{
-						
+						listOfApps[i]["name"] = listOfApps[i]["name"] + string.Format(" ({0})", i+1);
+						listOfApps[i]["modifiedDate"] = DateTime.UtcNow.ToString("s") + "Z";
+						string appId = listOfApps[i]["id"].ToString();
+						Tuple<HttpStatusCode, string> updatedApp = MakeQrsRequest("/app/" + appId, HTTPMethod.PUT, HTTPContentType.json, Encoding.UTF8.GetBytes(listOfApps[i].ToString()));
+						if (updatedApp.Item1 != HttpStatusCode.OK)
+						{
+							return ActionResult.Failure;
+						}
 					}
 				}
 			
