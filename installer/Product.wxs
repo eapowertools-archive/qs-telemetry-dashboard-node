@@ -36,18 +36,18 @@
     <WixVariable Id="WixUIDialogBmp" Value="dialog.bmp" />
 
     <InstallExecuteSequence>
-      <Custom Action='ValidateInstallDir' Before='CostInitialize'>(NOT Installed) OR (REINSTALL) OR (NOT UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='ValidateInstallDir' Before='CostInitialize'>NOT REMOVE</Custom>
       <Custom Action='IsRepositoryRunningAction' Before='InstallFiles' />
       <Custom Action='RemoveTasksAction' After='IsRepositoryRunningAction'>REMOVE="ALL"</Custom>
       <Custom Action='SetInstallDirectoryForCertsAction' After='InstallFiles'>NOT Installed</Custom>
       <Custom Action='CopyCertsAction' After='SetInstallDirectoryForCertsAction'>NOT Installed</Custom>
-      <Custom Action='ImportAppAction' After='CopyCertsAction'>(NOT Installed) OR (REINSTALL) OR (NOT UPGRADINGPRODUCTCODE)</Custom>
-      <Custom Action='SetInstallDirectoryForDataConnectionsAction' After='ImportAppAction'>(NOT Installed) OR (REINSTALL) OR (NOT UPGRADINGPRODUCTCODE)</Custom>
-      <Custom Action='CreateDataConnectionsAction' After='SetInstallDirectoryForDataConnectionsAction'>(NOT Installed) OR (REINSTALL) OR (NOT UPGRADINGPRODUCTCODE)</Custom>
-      <Custom Action='SetInstallDirectoryForTasksAction' After='CreateDataConnectionsAction'>(NOT Installed) OR (REINSTALL) OR (NOT UPGRADINGPRODUCTCODE)</Custom>
-      <Custom Action='CreateTasksAction' After='SetInstallDirectoryForTasksAction'>(NOT Installed) OR (REINSTALL) OR (NOT UPGRADINGPRODUCTCODE)</Custom>
-      <Custom Action='SetDirectoryForSetOutputDirAction' After='CreateTasksAction'>(NOT Installed) OR (REINSTALL) OR (NOT UPGRADINGPRODUCTCODE)</Custom>
-      <Custom Action='SetOutputDirAction' After='SetDirectoryForSetOutputDirAction'>(NOT Installed) OR (REINSTALL) OR (NOT UPGRADINGPRODUCTCODE)</Custom>
+      <Custom Action='ImportAppAction' After='CopyCertsAction'>NOT REMOVE</Custom>
+      <Custom Action='SetInstallDirectoryForDataConnectionsAction' After='ImportAppAction'>NOT REMOVE</Custom>
+      <Custom Action='CreateDataConnectionsAction' After='SetInstallDirectoryForDataConnectionsAction'>NOT REMOVE</Custom>
+      <Custom Action='SetInstallDirectoryForTasksAction' After='CreateDataConnectionsAction'>NOT REMOVE</Custom>
+      <Custom Action='CreateTasksAction' After='SetInstallDirectoryForTasksAction'>NOT REMOVE</Custom>
+      <Custom Action='SetDirectoryForSetOutputDirAction' After='CreateTasksAction'>NOT REMOVE</Custom>
+      <Custom Action='SetOutputDirAction' After='SetDirectoryForSetOutputDirAction'>NOT REMOVE</Custom>
 
     </InstallExecuteSequence>
   </Product>

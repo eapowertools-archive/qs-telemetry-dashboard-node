@@ -228,7 +228,7 @@ namespace CustomActions
 			{
 				string appID = listOfApps[0]["id"].ToString();
 				Tuple<HttpStatusCode, string> replaceAppResponse = MakeQrsRequest("/app/upload/replace?targetappid=" + appID, HTTPMethod.POST, HTTPContentType.app, Properties.Resources.Telemetry_Dashboard);
-				if (replaceAppResponse.Item1 == HttpStatusCode.OK)
+				if (replaceAppResponse.Item1 == HttpStatusCode.Created)
 				{
 					return ActionResult.Success;
 				}
@@ -239,11 +239,11 @@ namespace CustomActions
 				{
 					for (int i = 0; i < listOfApps.Count; i++)
 					{
-						listOfApps[i]["name"] = listOfApps[i]["name"] + string.Format(" ({0})", i+1);
+						listOfApps[i]["name"] = listOfApps[i]["name"] + "-old";
 						listOfApps[i]["modifiedDate"] = DateTime.UtcNow.ToString("s") + "Z";
 						string appId = listOfApps[i]["id"].ToString();
 						Tuple<HttpStatusCode, string> updatedApp = MakeQrsRequest("/app/" + appId, HTTPMethod.PUT, HTTPContentType.json, Encoding.UTF8.GetBytes(listOfApps[i].ToString()));
-						if (updatedApp.Item1 != HttpStatusCode.Created)
+						if (updatedApp.Item1 != HttpStatusCode.OK)
 						{
 							return ActionResult.Failure;
 						}
@@ -308,18 +308,20 @@ namespace CustomActions
 			}
 
 			// Reload Task
-			Tuple<HttpStatusCode, string> hasReloadTask = MakeQrsRequest("/reloadtask/count?filter=name eq 'TelemetryDashboard-2-Reload-Dashboard'", HTTPMethod.GET);
-			if (hasReloadTask.Item1 != HttpStatusCode.OK)
+			Tuple<HttpStatusCode, string> reloadTasks = MakeQrsRequest("/reloadtask/full?filter=name eq 'TelemetryDashboard-2-Reload-Dashboard'", HTTPMethod.GET);
+			if (reloadTasks.Item1 != HttpStatusCode.OK)
 			{
 				return ActionResult.Failure;
 			}
 
-			if (JObject.Parse((string)JsonConvert.DeserializeObject(hasReloadTask.Item2))["value"].ToObject<int>() == 0)
-			{
-				// Get AppID for Telemetry Dashboard App
-				Tuple<HttpStatusCode, string> getAppID = MakeQrsRequest("/app?filter=name eq 'Telemetry Dashboard'", HTTPMethod.GET);
-				string appId = JArray.Parse((string)JsonConvert.DeserializeObject(getAppID.Item2))[0]["id"].ToString();
+			JArray listOfTasks = JArray.Parse((string)JsonConvert.DeserializeObject(reloadTasks.Item2));
 
+			// Get AppID for Telemetry Dashboard App
+			Tuple<HttpStatusCode, string> getAppID = MakeQrsRequest("/app?filter=name eq 'Telemetry Dashboard'", HTTPMethod.GET);
+			string appId = JArray.Parse((string)JsonConvert.DeserializeObject(getAppID.Item2))[0]["id"].ToString();
+
+			if (listOfTasks.Count == 0)
+			{
 				string body = @"
 					{
 						'compositeEvents': [
@@ -369,6 +371,17 @@ namespace CustomActions
 
 				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/reloadtask/create", HTTPMethod.POST, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
 				if (importExtensionResponse.Item1 != HttpStatusCode.Created)
+				{
+					return ActionResult.Failure;
+				}
+			}
+			else
+			{
+				listOfTasks[0]["name"] = listOfTasks[0]["name"];
+				listOfTasks[0]["modifiedDate"] = DateTime.UtcNow.ToString("s") + "Z";
+				string reloadTaskID = listOfTasks[0]["id"].ToString();
+				Tuple<HttpStatusCode, string> updatedApp = MakeQrsRequest("/reloadtask/" + reloadTaskID, HTTPMethod.PUT, HTTPContentType.json, Encoding.UTF8.GetBytes(listOfTasks[0].ToString()));
+				if (updatedApp.Item1 != HttpStatusCode.OK)
 				{
 					return ActionResult.Failure;
 				}
