@@ -234,7 +234,8 @@ namespace CustomActions
 				}
 			}
 
-			else {
+			else
+			{
 				if (listOfApps.Count > 1)
 				{
 					for (int i = 0; i < listOfApps.Count; i++)
@@ -249,7 +250,7 @@ namespace CustomActions
 						}
 					}
 				}
-			
+
 				Tuple<HttpStatusCode, string> uploadAppResponse = MakeQrsRequest("/app/upload?name=Telemetry Dashboard", HTTPMethod.POST, HTTPContentType.app, Properties.Resources.Telemetry_Dashboard);
 				if (uploadAppResponse.Item1 == HttpStatusCode.Created)
 				{
@@ -377,7 +378,7 @@ namespace CustomActions
 			}
 			else
 			{
-				listOfTasks[0]["name"] = listOfTasks[0]["name"];
+				listOfTasks[0]["app"] = JObject.Parse(@"{ 'id': '" + appId + "'}");
 				listOfTasks[0]["modifiedDate"] = DateTime.UtcNow.ToString("s") + "Z";
 				string reloadTaskID = listOfTasks[0]["id"].ToString();
 				Tuple<HttpStatusCode, string> updatedApp = MakeQrsRequest("/reloadtask/" + reloadTaskID, HTTPMethod.PUT, HTTPContentType.json, Encoding.UTF8.GetBytes(listOfTasks[0].ToString()));
