@@ -83,7 +83,7 @@ try {
 
 // delete all files in folder
 var files = fs.readdirSync(config.filenames.outputDir)
-files.forEach(function (file) {
+files.forEach(function(file) {
     fs.unlinkSync(path.join(config.filenames.outputDir, file));
 });
 
@@ -102,33 +102,35 @@ var logLevelsPath = config.filenames.outputDir + config.filenames.logLevel_table
 logLevels.writeToFile(qrsInteractInstance, logLevelsPath);
 
 var usersPath = config.filenames.outputDir + config.filenames.users_table;
-users.writeToFile(qrsInteractInstance, usersPath);
-
-var sheetsPath = config.filenames.outputDir + config.filenames.sheets_table;
-sheets.writeToFile(qrsInteractInstance, sheetsPath);
-
-var appsPath = config.filenames.outputDir + config.filenames.apps_table;
-apps.writeToFile(qrsInteractInstance, appsPath).then(function (ids) {
-    var visualizationsPath = config.filenames.outputDir + config.filenames.visualizations_table;
-    var metricsPath = config.filenames.outputDir + config.filenames.metrics_table;
-    var dataMatrix = [];
-    return promise.each(ids, (element, index) => {
-        console.log("Getting data for app: " + element);
-        var appSession = createSession(element);
-        var dataRow = [];
-        dataRow.push(element);
-        dataRow.push(new Date().toJSON());
-        return appsEngine.writeToFile(appSession, element, sessionObjectParams, visualizationsPath, metricsPath).then(function () {
-            console.log("Done app " + (index + 1) + " of " + ids.length);
-            dataRow.push("Success");
-            dataRow.push("OK");
-        }).catch(function (err) {
-            dataRow.push("Fail");
-            dataRow.push(err);
-        }).then(function () {
-            dataMatrix.push(dataRow);
+users.writeToFile(qrsInteractInstance, usersPath).then(() => {
+    var sheetsPath = config.filenames.outputDir + config.filenames.sheets_table;
+    return sheets.writeToFile(qrsInteractInstance, sheetsPath).then(() => {
+        var appsPath = config.filenames.outputDir + config.filenames.apps_table;
+        return apps.writeToFile(qrsInteractInstance, appsPath).then(function(ids) {
+            var visualizationsPath = config.filenames.outputDir + config.filenames.visualizations_table;
+            var metricsPath = config.filenames.outputDir + config.filenames.metrics_table;
+            var dataMatrix = [];
+            return promise.each(ids, (element, index) => {
+                console.log("Getting data for app: " + element);
+                var appSession = createSession(element);
+                var dataRow = [];
+                dataRow.push(element);
+                dataRow.push(new Date().toJSON());
+                return appsEngine.writeToFile(appSession, element, sessionObjectParams, visualizationsPath, metricsPath).then(function() {
+                    console.log("Done app " + (index + 1) + " of " + ids.length);
+                    dataRow.push("Success");
+                    dataRow.push("OK");
+                }).catch(function(err) {
+                    dataRow.push("Fail");
+                    dataRow.push(err);
+                }).then(function() {
+                    dataMatrix.push(dataRow);
+                });
+            }).then(function() {
+                writeCSV.writeDataToFile(config.filenames.outputDir + config.filenames.outputStatus_table, dataMatrix);
+            });
         });
-    }).then(function () {
-        writeCSV.writeDataToFile(config.filenames.outputDir + config.filenames.outputStatus_table, dataMatrix);
     });
+}).then(() => {
+    console.log("Writing files is done.");
 });

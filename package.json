@@ -1,21 +1,21 @@
 {
-  "name": "telemetry-dashboard-meta-fetcher",
-  "version": "2.0.3",
-  "description": "",
-  "main": "fetchMetadata.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "bluebird": "^3.5.1",
-    "enigma.js": "^2.2.0",
-    "qrs-interact": "^3.0.0",
-    "ws": "^4.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/eapowertools/qs-telemetry-dashboard.git"
-  }
+    "name": "telemetry-dashboard-meta-fetcher",
+    "version": "3.0.0",
+    "description": "",
+    "main": "fetchMetadata.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "bluebird": "^3.5.3",
+        "enigma.js": "^2.4.0",
+        "qrs-interact": "^3.0.0",
+        "ws": "^4.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/eapowertools/qs-telemetry-dashboard.git"
+    }
 }
