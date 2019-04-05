@@ -29,6 +29,7 @@ namespace CustomActions
 
 	public class CustomActions
 	{
+		private static Lazy<string> HOSTNAME = new Lazy<string>(GetHostnameFromConfig);
 		private static Lazy<X509Certificate2> SENSE_CERT = new Lazy<X509Certificate2>(SetTLSandGetCertificate);
 		private static string OUTPUT_FOLDER = "TelemetryDashboard";
 		private static string JS_LIBRARY_FOLDER = "MetadataGenerater";
@@ -511,6 +512,12 @@ namespace CustomActions
 			RSACryptoServiceProvider provider = Crypto.DecodeRsaPrivateKey(certKeyBuffer);
 			cert.PrivateKey = provider;
 			return cert;
+		}
+
+		private static string GetHostnameFromConfig()
+		{
+
+			return "";
 		}
 	}
 }
