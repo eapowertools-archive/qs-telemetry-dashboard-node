@@ -63,7 +63,7 @@ namespace CustomActions
 
 			//Create the HTTP Request and add required headers and content in xrfkey
 			string xrfkey = "0123456789abcdef";
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(@"https://localhost:4242/qrs" + path + "xrfkey=" + xrfkey);
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(@"https://" + HOSTNAME.Value + ":4242/qrs" + path + "xrfkey=" + xrfkey);
 			request.Method = method.ToString();
 			request.Accept = "application/json";
 			request.Headers.Add("X-Qlik-xrfkey", xrfkey);
@@ -518,7 +518,7 @@ namespace CustomActions
 		{
 			string hostnameBase64 = File.ReadAllText(@"C:\ProgramData\Qlik\Sense\Host.cfg");
 			byte[] data = Convert.FromBase64String(hostnameBase64);
-			string hostname = ASCIIEncoding.ASCII.GetString(data);
+			string hostname = Encoding.ASCII.GetString(data);
 			return hostname;
 		}
 	}
