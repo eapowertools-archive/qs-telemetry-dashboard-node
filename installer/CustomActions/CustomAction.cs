@@ -516,8 +516,10 @@ namespace CustomActions
 
 		private static string GetHostnameFromConfig()
 		{
-
-			return "";
+			string hostnameBase64 = File.ReadAllText(@"C:\ProgramData\Qlik\Sense\Host.cfg");
+			byte[] data = Convert.FromBase64String(hostnameBase64);
+			string hostname = ASCIIEncoding.ASCII.GetString(data);
+			return hostname;
 		}
 	}
 }
