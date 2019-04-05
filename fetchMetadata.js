@@ -108,7 +108,6 @@ users.writeToFile(qrsInteractInstance, usersPath).then(() => {
         var appsPath = config.filenames.outputDir + config.filenames.apps_table;
         return apps.writeToFile(qrsInteractInstance, appsPath).then(function(ids) {
             var visualizationsPath = config.filenames.outputDir + config.filenames.visualizations_table;
-            var metricsPath = config.filenames.outputDir + config.filenames.metrics_table;
             var dataMatrix = [];
             return promise.each(ids, (element, index) => {
                 console.log("Getting data for app: " + element);
@@ -116,7 +115,7 @@ users.writeToFile(qrsInteractInstance, usersPath).then(() => {
                 var dataRow = [];
                 dataRow.push(element);
                 dataRow.push(new Date().toJSON());
-                return appsEngine.writeToFile(appSession, element, sessionObjectParams, visualizationsPath, metricsPath).then(function() {
+                return appsEngine.writeToFile(appSession, element, sessionObjectParams, visualizationsPath).then(function() {
                     console.log("Done app " + (index + 1) + " of " + ids.length);
                     dataRow.push("Success");
                     dataRow.push("OK");
