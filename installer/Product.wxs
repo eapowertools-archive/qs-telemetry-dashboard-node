@@ -8,7 +8,8 @@
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
     <Property Id="MSIUSEREALADMINDETECTION" Value="1" />
-
+    <Property Id="MsiLogging" Value="v" />
+    
     <Property Id="QRSKEY">
       <RegistrySearch Id="QlikSenseRepsitoryServiceRegistry"
                       Root="HKLM"

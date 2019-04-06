@@ -29,6 +29,7 @@ namespace CustomActions
 
 	public class CustomActions
 	{
+		private static Lazy<string> HOSTNAME = new Lazy<string>(GetHostnameFromConfig);
 		private static Lazy<X509Certificate2> SENSE_CERT = new Lazy<X509Certificate2>(SetTLSandGetCertificate);
 		private static string OUTPUT_FOLDER = "TelemetryDashboard";
 		private static string JS_LIBRARY_FOLDER = "MetadataGenerater";
@@ -62,7 +63,7 @@ namespace CustomActions
 
 			//Create the HTTP Request and add required headers and content in xrfkey
 			string xrfkey = "0123456789abcdef";
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(@"https://localhost:4242/qrs" + path + "xrfkey=" + xrfkey);
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(@"https://" + HOSTNAME.Value + ":4242/qrs" + path + "xrfkey=" + xrfkey);
 			request.Method = method.ToString();
 			request.Accept = "application/json";
 			request.Headers.Add("X-Qlik-xrfkey", xrfkey);
@@ -511,6 +512,14 @@ namespace CustomActions
 			RSACryptoServiceProvider provider = Crypto.DecodeRsaPrivateKey(certKeyBuffer);
 			cert.PrivateKey = provider;
 			return cert;
+		}
+
+		private static string GetHostnameFromConfig()
+		{
+			string hostnameBase64 = File.ReadAllText(@"C:\ProgramData\Qlik\Sense\Host.cfg");
+			byte[] data = Convert.FromBase64String(hostnameBase64);
+			string hostname = Encoding.ASCII.GetString(data);
+			return hostname;
 		}
 	}
 }
