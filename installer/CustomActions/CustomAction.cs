@@ -202,7 +202,7 @@ namespace CustomActions
 		[CustomAction]
 		public static ActionResult IsRepositoryRunning(Session session)
 		{
-			session.Log("Making a request to 'http://{0}:4242", HOSTNAME.Value);
+			session.Log("Making a request to 'https://{0}:4242", HOSTNAME.Value);
 			Tuple<HttpStatusCode, string> response = MakeQrsRequest("/about", HTTPMethod.GET);
 			if (response.Item1 == HttpStatusCode.OK)
 			{
