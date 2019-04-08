@@ -202,6 +202,7 @@ namespace CustomActions
 		[CustomAction]
 		public static ActionResult IsRepositoryRunning(Session session)
 		{
+			session.Log("Making a request to 'http://{0}:4242", HOSTNAME.Value);
 			Tuple<HttpStatusCode, string> response = MakeQrsRequest("/about", HTTPMethod.GET);
 			if (response.Item1 == HttpStatusCode.OK)
 			{
@@ -209,7 +210,10 @@ namespace CustomActions
 			}
 			else
 			{
-				session.Message(InstallMessage.Error, new Record() { FormatString = "Cannot install the Telemetry Dashboard as the installer could not contact the 'Qlik Repository Service'." });
+				session.Log("IsRepositoryRunning custom action failed.");
+				session.Log("Response was: {0}", response.Item1.ToString());
+
+				session.Message(InstallMessage.Error, new Record() { FormatString = "Cannot install the Telemetry Dashboard as the installer could not contact the 'Qlik Repository Service'. Response code was: " + response.Item1.ToString() });
 				return ActionResult.Failure;
 			}
 		}
