@@ -59,73 +59,68 @@ namespace CustomActions
 
 			string responseString = "";
 			HttpStatusCode responseCode = 0;
-			ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-
-			//Create the HTTP Request and add required headers and content in xrfkey
 			string xrfkey = "0123456789abcdef";
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(@"https://" + HOSTNAME.Value + ":4242/qrs" + path + "xrfkey=" + xrfkey);
-			request.Method = method.ToString();
-			request.Accept = "application/json";
-			request.Headers.Add("X-Qlik-xrfkey", xrfkey);
-			request.Headers.Add("X-Qlik-User", @"UserDirectory=internal;UserId=sa_api");
-			// Add the certificate to the request and provide the user to execute as
-			request.ClientCertificates.Add(SENSE_CERT.Value);
 
-			if (method == HTTPMethod.POST || method == HTTPMethod.PUT)
+			ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+			ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
+
+			HttpRequestMessage req = new HttpRequestMessage();
+			req.RequestUri = new Uri(@"https://" + HOSTNAME.Value + ":4242/qrs" + path + "xrfkey=" + xrfkey);
+			req.Method = method;
+			req.Headers.Add("X-Qlik-xrfkey", xrfkey);
+			req.Headers.Add("X-Qlik-User", @"UserDirectory=internal;UserId=sa_api");
+
+			WebRequestHandler handler = new WebRequestHandler();
+			handler.ClientCertificates.Add(SENSE_CERT.Value);
+
+			if (method == HttpMethod.Post || method == HttpMethod.Put)
 			{
+				req.Content = new ByteArrayContent(body);
+
 				// Set Headers
 				if (contentType == HTTPContentType.json)
 				{
-					request.ContentType = "application/json";
+					req.Content.Headers.Remove("Content-Type");
+					req.Content.Headers.Add("Content-Type", "application/json");
 
 				}
 				else if (contentType == HTTPContentType.app)
 				{
-					request.ContentType = "application/vnd.qlik.sense.app";
+					req.Content.Headers.Remove("Content-Type");
+					req.Content.Headers.Add("Content-Type", "application/vnd.qlik.sense.app");
 				}
 				else
 				{
 					throw new ArgumentException("Content type '" + contentType.ToString() + "' is not supported.");
 				}
-
-				// Set Body
-				if (body == null)
-				{
-					request.ContentLength = 0;
-				}
-				else
-				{
-					request.ContentLength = body.Length;
-					Stream requestStream = request.GetRequestStream();
-					requestStream.Write(body, 0, body.Length);
-					requestStream.Close();
-				}
 			}
 
-			// make the web request and return the content
-			try
+			using (HttpClient client = new HttpClient(handler))
 			{
-				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+				client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+				// Call asynchronous network methods in a try/catch block to handle exceptions
+				try
 				{
-					responseCode = response.StatusCode;
-					using (Stream stream = response.GetResponseStream())
+					Task<HttpResponseMessage> responseTask = client.SendAsync(req);
+					responseTask.Wait();
+					responseTask.Result.EnsureSuccessStatusCode();
+					responseCode = responseTask.Result.StatusCode;
+					Task<string> responseBodyTask = responseTask.Result.Content.ReadAsStringAsync();
+					responseBodyTask.Wait();
+					responseString = responseBodyTask.Result;
+				}
+				catch (Exception e)
+				{
+					if (responseCode != 0)
 					{
-						using (StreamReader reader = new StreamReader(stream))
-						{
-							// if response is invalid, throw exception and expect it to be handled in calling function (4xx errors)
-							responseString = JsonConvert.SerializeObject(reader.ReadToEnd());
-						}
+						return new Tuple<HttpStatusCode, string>(responseCode, e.Message);
+					}
+					else
+					{
+						return new Tuple<HttpStatusCode, string>(HttpStatusCode.InternalServerError, e.Message);
+
 					}
 				}
-			}
-			catch (WebException webEx)
-			{
-				return new Tuple<HttpStatusCode, string>(HttpStatusCode.ServiceUnavailable, webEx.Message);
-			}
-			catch (Exception e)
-			{
-				return new Tuple<HttpStatusCode, string>(HttpStatusCode.InternalServerError, e.Message);
-
 			}
 
 			return new Tuple<HttpStatusCode, string>(responseCode, responseString);
