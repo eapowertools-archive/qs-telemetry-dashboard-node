@@ -2,10 +2,12 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using CustomActions.Helpers;
 using Microsoft.Deployment.WindowsInstaller;
 using Newtonsoft.Json;
@@ -13,14 +15,6 @@ using Newtonsoft.Json.Linq;
 
 namespace CustomActions
 {
-	enum HTTPMethod
-	{
-		GET,
-		PUT,
-		POST,
-		DELETE
-	}
-
 	enum HTTPContentType
 	{
 		json,
@@ -35,7 +29,7 @@ namespace CustomActions
 		private static string JS_LIBRARY_FOLDER = "MetadataGenerater";
 		private static string METADATA_OUTPUT = "MetadataOutput";
 
-		private static Tuple<HttpStatusCode, string> MakeQrsRequest(string path, HTTPMethod method, HTTPContentType contentType = HTTPContentType.json, byte[] body = null)
+		private static Tuple<HttpStatusCode, string> MakeQrsRequest(string path, HttpMethod method, HTTPContentType contentType = HTTPContentType.json, byte[] body = null)
 		{
 			// Fix Path
 			if (!path.StartsWith("/"))
@@ -98,7 +92,6 @@ namespace CustomActions
 			using (HttpClient client = new HttpClient(handler))
 			{
 				client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-				// Call asynchronous network methods in a try/catch block to handle exceptions
 				try
 				{
 					Task<HttpResponseMessage> responseTask = client.SendAsync(req);
@@ -198,7 +191,7 @@ namespace CustomActions
 		public static ActionResult IsRepositoryRunning(Session session)
 		{
 			session.Log("Making a request to 'https://{0}:4242", HOSTNAME.Value);
-			Tuple<HttpStatusCode, string> response = MakeQrsRequest("/about", HTTPMethod.GET);
+			Tuple<HttpStatusCode, string> response = MakeQrsRequest("/about", HttpMethod.Get);
 			if (response.Item1 == HttpStatusCode.OK)
 			{
 				return ActionResult.Success;
@@ -216,18 +209,18 @@ namespace CustomActions
 		[CustomAction]
 		public static ActionResult ImportApp(Session session)
 		{
-			Tuple<HttpStatusCode, string> apps = MakeQrsRequest("/app/full?filter=name eq 'Telemetry Dashboard'", HTTPMethod.GET);
+			Tuple<HttpStatusCode, string> apps = MakeQrsRequest("/app/full?filter=name eq 'Telemetry Dashboard'", HttpMethod.Get);
 			if (apps.Item1 != HttpStatusCode.OK)
 			{
 				return ActionResult.Failure;
 			}
 
-			JArray listOfApps = JArray.Parse((string)JsonConvert.DeserializeObject(apps.Item2));
+			JArray listOfApps = JArray.Parse(apps.Item2);
 
 			if (listOfApps.Count == 1)
 			{
 				string appID = listOfApps[0]["id"].ToString();
-				Tuple<HttpStatusCode, string> replaceAppResponse = MakeQrsRequest("/app/upload/replace?targetappid=" + appID, HTTPMethod.POST, HTTPContentType.app, Properties.Resources.Telemetry_Dashboard);
+				Tuple<HttpStatusCode, string> replaceAppResponse = MakeQrsRequest("/app/upload/replace?targetappid=" + appID, HttpMethod.Post, HTTPContentType.app, Properties.Resources.Telemetry_Dashboard);
 				if (replaceAppResponse.Item1 == HttpStatusCode.Created)
 				{
 					return ActionResult.Success;
@@ -243,7 +236,7 @@ namespace CustomActions
 						listOfApps[i]["name"] = listOfApps[i]["name"] + "-old";
 						listOfApps[i]["modifiedDate"] = DateTime.UtcNow.ToString("s") + "Z";
 						string appId = listOfApps[i]["id"].ToString();
-						Tuple<HttpStatusCode, string> updatedApp = MakeQrsRequest("/app/" + appId, HTTPMethod.PUT, HTTPContentType.json, Encoding.UTF8.GetBytes(listOfApps[i].ToString()));
+						Tuple<HttpStatusCode, string> updatedApp = MakeQrsRequest("/app/" + appId, HttpMethod.Put, HTTPContentType.json, Encoding.UTF8.GetBytes(listOfApps[i].ToString()));
 						if (updatedApp.Item1 != HttpStatusCode.OK)
 						{
 							return ActionResult.Failure;
@@ -251,7 +244,7 @@ namespace CustomActions
 					}
 				}
 
-				Tuple<HttpStatusCode, string> uploadAppResponse = MakeQrsRequest("/app/upload?name=Telemetry Dashboard", HTTPMethod.POST, HTTPContentType.app, Properties.Resources.Telemetry_Dashboard);
+				Tuple<HttpStatusCode, string> uploadAppResponse = MakeQrsRequest("/app/upload?name=Telemetry Dashboard", HttpMethod.Post, HTTPContentType.app, Properties.Resources.Telemetry_Dashboard);
 				if (uploadAppResponse.Item1 == HttpStatusCode.Created)
 				{
 					return ActionResult.Success;
@@ -271,7 +264,7 @@ namespace CustomActions
 
 			string externalTaskID = "";
 			// External Task
-			Tuple<HttpStatusCode, string> hasExternalTask = MakeQrsRequest("/externalprogramtask/count?filter=name eq 'TelemetryDashboard-1-Generate-Metadata'", HTTPMethod.GET);
+			Tuple<HttpStatusCode, string> hasExternalTask = MakeQrsRequest("/externalprogramtask/count?filter=name eq 'TelemetryDashboard-1-Generate-Metadata'", HttpMethod.Get);
 			if (hasExternalTask.Item1 != HttpStatusCode.OK)
 			{
 				return ActionResult.Failure;
@@ -291,35 +284,35 @@ namespace CustomActions
 					'impactSecurityAccess': false,
 					'schemaPath': 'ExternalProgramTask'
 				}";
-				Tuple<HttpStatusCode, string> createExternalTask = MakeQrsRequest("/externalprogramtask", HTTPMethod.POST, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
+				Tuple<HttpStatusCode, string> createExternalTask = MakeQrsRequest("/externalprogramtask", HttpMethod.Post, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
 				if (createExternalTask.Item1 != HttpStatusCode.Created)
 				{
 					return ActionResult.Failure;
 				}
 				else
 				{
-					externalTaskID = JObject.Parse((string)JsonConvert.DeserializeObject(createExternalTask.Item2))["id"].ToString();
+					externalTaskID = JObject.Parse(createExternalTask.Item2)["id"].ToString();
 				}
 			}
 			else
 			{
-				Tuple<HttpStatusCode, string> getExternalTaskId = MakeQrsRequest("/externalprogramtask?filter=name eq 'TelemetryDashboard-1-Generate-Metadata'", HTTPMethod.GET);
-				externalTaskID = JArray.Parse((string)JsonConvert.DeserializeObject(getExternalTaskId.Item2))[0]["id"].ToString();
+				Tuple<HttpStatusCode, string> getExternalTaskId = MakeQrsRequest("/externalprogramtask?filter=name eq 'TelemetryDashboard-1-Generate-Metadata'", HttpMethod.Get);
+				externalTaskID = JArray.Parse(getExternalTaskId.Item2)[0]["id"].ToString();
 
 			}
 
 			// Reload Task
-			Tuple<HttpStatusCode, string> reloadTasks = MakeQrsRequest("/reloadtask/full?filter=name eq 'TelemetryDashboard-2-Reload-Dashboard'", HTTPMethod.GET);
+			Tuple<HttpStatusCode, string> reloadTasks = MakeQrsRequest("/reloadtask/full?filter=name eq 'TelemetryDashboard-2-Reload-Dashboard'", HttpMethod.Get);
 			if (reloadTasks.Item1 != HttpStatusCode.OK)
 			{
 				return ActionResult.Failure;
 			}
 
-			JArray listOfTasks = JArray.Parse((string)JsonConvert.DeserializeObject(reloadTasks.Item2));
+			JArray listOfTasks = JArray.Parse(reloadTasks.Item2);
 
 			// Get AppID for Telemetry Dashboard App
-			Tuple<HttpStatusCode, string> getAppID = MakeQrsRequest("/app?filter=name eq 'Telemetry Dashboard'", HTTPMethod.GET);
-			string appId = JArray.Parse((string)JsonConvert.DeserializeObject(getAppID.Item2))[0]["id"].ToString();
+			Tuple<HttpStatusCode, string> getAppID = MakeQrsRequest("/app?filter=name eq 'Telemetry Dashboard'", HttpMethod.Get);
+			string appId = JArray.Parse(getAppID.Item2)[0]["id"].ToString();
 
 			if (listOfTasks.Count == 0)
 			{
@@ -370,7 +363,7 @@ namespace CustomActions
 						}
 					}";
 
-				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/reloadtask/create", HTTPMethod.POST, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
+				Tuple<HttpStatusCode, string> importExtensionResponse = MakeQrsRequest("/reloadtask/create", HttpMethod.Post, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
 				if (importExtensionResponse.Item1 != HttpStatusCode.Created)
 				{
 					return ActionResult.Failure;
@@ -381,7 +374,7 @@ namespace CustomActions
 				listOfTasks[0]["app"] = JObject.Parse(@"{ 'id': '" + appId + "'}");
 				listOfTasks[0]["modifiedDate"] = DateTime.UtcNow.ToString("s") + "Z";
 				string reloadTaskID = listOfTasks[0]["id"].ToString();
-				Tuple<HttpStatusCode, string> updatedApp = MakeQrsRequest("/reloadtask/" + reloadTaskID, HTTPMethod.PUT, HTTPContentType.json, Encoding.UTF8.GetBytes(listOfTasks[0].ToString()));
+				Tuple<HttpStatusCode, string> updatedApp = MakeQrsRequest("/reloadtask/" + reloadTaskID, HttpMethod.Put, HTTPContentType.json, Encoding.UTF8.GetBytes(listOfTasks[0].ToString()));
 				if (updatedApp.Item1 != HttpStatusCode.OK)
 				{
 					return ActionResult.Failure;
@@ -398,12 +391,12 @@ namespace CustomActions
 			installDir = installDir.Replace("\\", "\\\\");
 
 			// Add TelemetryMetadata dataconnection
-			Tuple<HttpStatusCode, string> dataConnections = MakeQrsRequest("/dataconnection?filter=name eq 'TelemetryMetadata'", HTTPMethod.GET);
+			Tuple<HttpStatusCode, string> dataConnections = MakeQrsRequest("/dataconnection?filter=name eq 'TelemetryMetadata'", HttpMethod.Get);
 			if (dataConnections.Item1 != HttpStatusCode.OK)
 			{
 				return ActionResult.Failure;
 			}
-			JArray listOfDataconnections = JArray.Parse((string)JsonConvert.DeserializeObject(dataConnections.Item2));
+			JArray listOfDataconnections = JArray.Parse(dataConnections.Item2);
 			if (listOfDataconnections.Count == 0)
 			{
 				string body = @"
@@ -415,7 +408,7 @@ namespace CustomActions
 				}";
 
 
-				Tuple<HttpStatusCode, string> createdConnection = MakeQrsRequest("/dataconnection", HTTPMethod.POST, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
+				Tuple<HttpStatusCode, string> createdConnection = MakeQrsRequest("/dataconnection", HttpMethod.Post, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
 				if (createdConnection.Item1 != HttpStatusCode.Created)
 				{
 					return ActionResult.Failure;
@@ -427,7 +420,7 @@ namespace CustomActions
 				listOfDataconnections[0]["connectionstring"] = installDir + METADATA_OUTPUT + "\\";
 				listOfDataconnections[0]["modifiedDate"] = DateTime.UtcNow.ToString("s") + "Z";
 				string appId = listOfDataconnections[0]["id"].ToString();
-				Tuple<HttpStatusCode, string> updatedConnection = MakeQrsRequest("/dataconnection/" + appId, HTTPMethod.PUT, HTTPContentType.json, Encoding.UTF8.GetBytes(listOfDataconnections[0].ToString()));
+				Tuple<HttpStatusCode, string> updatedConnection = MakeQrsRequest("/dataconnection/" + appId, HttpMethod.Put, HTTPContentType.json, Encoding.UTF8.GetBytes(listOfDataconnections[0].ToString()));
 				if (updatedConnection.Item1 != HttpStatusCode.OK)
 				{
 					return ActionResult.Failure;
@@ -435,12 +428,12 @@ namespace CustomActions
 			}
 
 			// Add EngineSettings dataconnection
-			Tuple<HttpStatusCode, string> engineSettingDataconnection = MakeQrsRequest("/dataconnection?filter=name eq 'EngineSettingsFolder'", HTTPMethod.GET);
+			Tuple<HttpStatusCode, string> engineSettingDataconnection = MakeQrsRequest("/dataconnection?filter=name eq 'EngineSettingsFolder'", HttpMethod.Get);
 			if (dataConnections.Item1 != HttpStatusCode.OK)
 			{
 				return ActionResult.Failure;
 			}
-			listOfDataconnections = JArray.Parse((string)JsonConvert.DeserializeObject(engineSettingDataconnection.Item2));
+			listOfDataconnections = JArray.Parse(engineSettingDataconnection.Item2);
 			if (listOfDataconnections.Count == 0)
 			{
 				string body = @"
@@ -451,7 +444,7 @@ namespace CustomActions
 					'username': ''
 				}";
 
-				Tuple<HttpStatusCode, string> createdConnection = MakeQrsRequest("/dataconnection", HTTPMethod.POST, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
+				Tuple<HttpStatusCode, string> createdConnection = MakeQrsRequest("/dataconnection", HttpMethod.Post, HTTPContentType.json, Encoding.UTF8.GetBytes(body));
 				if (createdConnection.Item1 != HttpStatusCode.Created)
 				{
 					return ActionResult.Failure;
@@ -475,23 +468,23 @@ namespace CustomActions
 		[CustomAction]
 		public static ActionResult RemoveTasks(Session session)
 		{
-			Tuple<HttpStatusCode, string> getReloadTaskId = MakeQrsRequest("/reloadtask?filter=name eq 'TelemetryDashboard-2-Reload-Dashboard'", HTTPMethod.GET);
+			Tuple<HttpStatusCode, string> getReloadTaskId = MakeQrsRequest("/reloadtask?filter=name eq 'TelemetryDashboard-2-Reload-Dashboard'", HttpMethod.Get);
 			if (getReloadTaskId.Item1 == HttpStatusCode.OK)
 			{
-				JArray reloadTasks = JArray.Parse((string)JsonConvert.DeserializeObject(getReloadTaskId.Item2));
+				JArray reloadTasks = JArray.Parse(getReloadTaskId.Item2);
 				foreach (JToken t in reloadTasks)
 				{
-					MakeQrsRequest("/reloadtask/" + t["id"], HTTPMethod.DELETE);
+					MakeQrsRequest("/reloadtask/" + t["id"], HttpMethod.Delete);
 				}
 			}
 
-			Tuple<HttpStatusCode, string> getExternalTaskId = MakeQrsRequest("/externalprogramtask?filter=name eq 'TelemetryDashboard-1-Generate-Metadata'", HTTPMethod.GET);
+			Tuple<HttpStatusCode, string> getExternalTaskId = MakeQrsRequest("/externalprogramtask?filter=name eq 'TelemetryDashboard-1-Generate-Metadata'", HttpMethod.Get);
 			if (getExternalTaskId.Item1 == HttpStatusCode.OK)
 			{
-				JArray externalTasks = JArray.Parse((string)JsonConvert.DeserializeObject(getExternalTaskId.Item2));
+				JArray externalTasks = JArray.Parse(getExternalTaskId.Item2);
 				foreach (JToken t in externalTasks)
 				{
-					MakeQrsRequest("/externalprogramtask/" + t["id"], HTTPMethod.DELETE);
+					MakeQrsRequest("/externalprogramtask/" + t["id"], HttpMethod.Delete);
 				}
 			}
 
