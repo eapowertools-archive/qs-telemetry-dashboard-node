@@ -276,7 +276,7 @@ namespace CustomActions
 			{
 				return ActionResult.Failure;
 			}
-			if (JObject.Parse((string)JsonConvert.DeserializeObject(hasExternalTask.Item2))["value"].ToObject<int>() == 0)
+			if (JObject.Parse(hasExternalTask.Item2)["value"].ToObject<int>() == 0)
 			{
 				installDir = installDir.Replace("\\", "\\\\");
 				string body = @"
