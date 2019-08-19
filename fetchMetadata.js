@@ -89,25 +89,25 @@ files.forEach(function(file) {
 
 writeHeaders.writeAllHeaders(config.filenames.outputDir);
 
-var systemInfoPath = config.filenames.outputDir + config.filenames.systemInfo_table;
+var systemInfoPath = path.join(config.filenames.outputDir, config.filenames.systemInfo_table);
 sysInfo.writeToFile(qrsInteractInstance, systemInfoPath);
 
-var customPropertyDefinitionPath = config.filenames.outputDir + config.filenames.customPropertyDefinitions_table;
+var customPropertyDefinitionPath = path.join(config.filenames.outputDir, config.filenames.customPropertyDefinitions_table);
 customPropertyDefinitions.writeToFile(qrsInteractInstance, customPropertyDefinitionPath);
 
-var customPropertiesPath = config.filenames.outputDir + config.filenames.entityCustomPropertyMap_table;
+var customPropertiesPath = path.join(config.filenames.outputDir, config.filenames.entityCustomPropertyMap_table);
 entityCustomPropertyValues.writeToFile(qrsInteractInstance, "app", customPropertiesPath);
 
-var logLevelsPath = config.filenames.outputDir + config.filenames.logLevel_table;
+var logLevelsPath = path.join(config.filenames.outputDir, config.filenames.logLevel_table);
 logLevels.writeToFile(qrsInteractInstance, logLevelsPath);
 
-var usersPath = config.filenames.outputDir + config.filenames.users_table;
+var usersPath = path.join(config.filenames.outputDir, config.filenames.users_table);
 users.writeToFile(qrsInteractInstance, usersPath).then(() => {
-    var sheetsPath = config.filenames.outputDir + config.filenames.sheets_table;
+    var sheetsPath = path.join(config.filenames.outputDir, config.filenames.sheets_table);
     return sheets.writeToFile(qrsInteractInstance, sheetsPath).then(() => {
-        var appsPath = config.filenames.outputDir + config.filenames.apps_table;
+        var appsPath = path.join(config.filenames.outputDir, config.filenames.apps_table);
         return apps.writeToFile(qrsInteractInstance, appsPath).then(function(ids) {
-            var visualizationsPath = config.filenames.outputDir + config.filenames.visualizations_table;
+            var visualizationsPath = path.join(config.filenames.outputDir, config.filenames.visualizations_table);
             var dataMatrix = [];
             return promise.each(ids, (element, index) => {
                 console.log("Getting data for app: " + element);
@@ -126,7 +126,7 @@ users.writeToFile(qrsInteractInstance, usersPath).then(() => {
                     dataMatrix.push(dataRow);
                 });
             }).then(function() {
-                writeCSV.writeDataToFile(config.filenames.outputDir + config.filenames.outputStatus_table, dataMatrix);
+                writeCSV.writeDataToFile(path.join(config.filenames.outputDir, config.filenames.outputStatus_table), dataMatrix);
             });
         });
     });
