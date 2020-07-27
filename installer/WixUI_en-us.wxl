@@ -438,7 +438,7 @@ Example: "\\qlikserver\QlikSenseShare\TelemetryDashboard"</String>
     <String Id="Error1322" Overridable="yes"><!-- _locID_text="Error1322" _locComment="Error1322" -->A portion of the folder path '[2]' is invalid. It is either empty or exceeds the length allowed by the system.</String>
     <String Id="Error1323" Overridable="yes"><!-- _locID_text="Error1323" _locComment="Error1323" -->The folder path '[2]' contains words that are not valid in folder paths.</String>
     <String Id="Error1324" Overridable="yes"><!-- _locID_text="Error1324" _locComment="Error1324" -->The folder path '[2]' contains an invalid character.</String>
-    <String Id="Error1325" Overridable="yes"><!-- _locID_text="Error1325" _locComment="Error1325" -->'[2]' is not a valid short file name.</String>
+    <String Id="Error1325" Overridable="yes"><!-- _locID_text="Error1325" _locComment="Error1325" -->Unable to validate permissions on UNC share or NT file system.</String>
     <String Id="Error1326" Overridable="yes"><!-- _locID_text="Error1326" _locComment="Error1326" -->Error getting file security: [3] GetLastError: [2]</String>
     <String Id="Error1327" Overridable="yes"><!-- _locID_text="Error1327" _locComment="Error1327" -->Invalid Drive: [2]</String>
     <String Id="Error1328" Overridable="yes"><!-- _locID_text="Error1328" _locComment="Error1328" -->Error applying patch to file [2]. It has probably been updated by other means, and can no longer be modified by this patch. For more information contact your patch vendor. {{System Error: [3]}}</String>
