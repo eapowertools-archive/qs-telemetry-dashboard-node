@@ -1,5 +1,5 @@
 # Status
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Project Status: Moved to https://github.com/eapowertools/qs-telemetry-dashboard – The project has been moved to a new location, and the version at that location should be considered authoritative.](https://www.repostatus.org/badges/latest/moved.svg)](https://www.repostatus.org/#moved) to [https://github.com/eapowertools/qs-telemetry-dashboard](https://github.com/eapowertools/qs-telemetry-dashboard)
 
 # Telemetry Dashboard for Qlik Sense
 #### Download Latest [Here](https://github.com/eapowertools/qs-telemetry-dashboard/releases/latest)
